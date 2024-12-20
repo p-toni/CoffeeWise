@@ -49,6 +49,7 @@ export default function BrewingPage() {
   const [isMethodSelectorOpen, setMethodSelectorOpen] = useState(false);
   const updateTasting = useUpdateTasting(brewingId || "");
   const [isBeanSelectorOpen, setIsBeanSelectorOpen] = useState(false);
+  const [startTime, setStartTime] = useState<string>("");
 
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
@@ -64,14 +65,19 @@ export default function BrewingPage() {
   const handleStart = async () => {
     const result = await startBrewing.mutateAsync();
     setBrewingId(result.brewingId);
+    setStartTime(new Date().toLocaleString());
     setCurrentStep(1);
   };
 
   if (currentStep === 0) {
     return (
       <div className="min-h-screen bg-[#121212] text-[#f0f0f0] p-4 font-mono text-sm">
-        <div className="max-w-3xl mx-auto">
-          <Button onClick={handleStart}>Start Brewing</Button>
+        <div className="max-w-3xl mx-auto space-y-2.5">
+          <SectionHeader
+            title="Start Brewing"
+            icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />}
+          />
+          <Button onClick={handleStart} variant="outline" className="text-xs">Start Brewing</Button>
         </div>
       </div>
     );
@@ -83,8 +89,8 @@ export default function BrewingPage() {
         {/* Request Started Section */}
         <SectionHeader
           title="Brewing started"
-          status={new Date().toLocaleString()}
-          icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888]" />}
+          status={startTime}
+          icon={<div className="w-1.5 h-1.5 rounded-full bg-[#A3E635] transition-colors duration-300" />}
         />
 
         {/* Settings Card */}
