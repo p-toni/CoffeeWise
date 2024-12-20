@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useBrewing } from "@/context/BrewingContext"
 import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } from "@/lib/brewing"
 import { useState } from "react"
+import { BeanSelector } from "@/components/BeanSelector"
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -41,6 +42,7 @@ export default function BrewingPage() {
   const updateSettings = useUpdateSettings(brewingId || "");
   const updateSteps = useUpdateSteps(brewingId || "");
   const updateTasting = useUpdateTasting(brewingId || "");
+  const [isBeanSelectorOpen, setIsBeanSelectorOpen] = useState(false);
 
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
@@ -82,89 +84,37 @@ export default function BrewingPage() {
         {/* Settings Card */}
         <Card className="bg-[#1e1e1e] rounded-md p-3">
           <DetailRow label="Brewing ID" value={brewingId} />
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-[#888888]">Bean:</label>
-              <input
-                type="text"
-                value={settings.bean}
-                onChange={(e) => setSettings(prev => ({ ...prev, bean: e.target.value }))}
-                className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-[#888888]">Method:</label>
-              <select
-                value={settings.method}
-                onChange={(e) => setSettings(prev => ({ ...prev, method: e.target.value }))}
-                className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+          <DetailRow label="Bean" value={
+            <>
+              <button 
+                onClick={() => setIsBeanSelectorOpen(true)}
+                className="text-[#cccccc] hover:text-white focus:outline-none"
               >
-                <option value="V60">V60</option>
-                <option value="Chemex">Chemex</option>
-                <option value="AeroPress">AeroPress</option>
-                <option value="French Press">French Press</option>
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-[#888888]">Coffee (g):</label>
-                <input
-                  type="number"
-                  value={settings.settings.coffee}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    settings: { ...prev.settings, coffee: parseInt(e.target.value) }
-                  }))}
-                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-[#888888]">Water Ratio:</label>
-                <input
-                  type="number"
-                  value={settings.settings.water_ratio}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    settings: { ...prev.settings, water_ratio: parseInt(e.target.value) }
-                  }))}
-                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-[#888888]">Grind:</label>
-                <select
-                  value={settings.settings.grind_size}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    settings: { ...prev.settings, grind_size: e.target.value }
-                  }))}
-                  className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
-                >
-                  <option value="fine">Fine</option>
-                  <option value="medium-fine">Medium Fine</option>
-                  <option value="medium">Medium</option>
-                  <option value="coarse">Coarse</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-[#888888]">Temp (°C):</label>
-                <input
-                  type="number"
-                  value={settings.settings.water_temp}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    settings: { ...prev.settings, water_temp: parseInt(e.target.value) }
-                  }))}
-                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
-                />
-              </div>
-            </div>
+                {settings.bean}
+              </button>
+              <BeanSelector
+                isOpen={isBeanSelectorOpen}
+                onClose={() => setIsBeanSelectorOpen(false)}
+                onSelect={(path) => {
+                  setSettings(prev => ({ ...prev, bean: path }));
+                }}
+              />
+            </>
+          } />
+          <DetailRow label="Method" value={settings.method} />
+          <DetailRow 
+            label="Settings" 
+            value={`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`} 
+            valueClass="truncate text-[#cccccc]" 
+          />
+          <div className="mt-3 flex justify-end">
             <Button 
               onClick={async () => {
                 await updateSettings.mutateAsync(settings);
                 setCurrentStep(2);
               }}
-              className="w-full mt-2"
+              variant="outline"
+              className="text-xs"
             >
               Update Settings
             </Button>
