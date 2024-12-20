@@ -9,8 +9,9 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+let db;
 try {
-  export const db = drizzle({
+  db = drizzle({
     connection: process.env.DATABASE_URL,
     schema,
     ws: ws,
@@ -18,9 +19,11 @@ try {
 } catch (error) {
   console.error("Database connection error:", error);
   // Provide a mock db for development if needed
-  export const db = {
+  db = {
     insert: () => ({ values: () => ({ returning: () => [] }) }),
     update: () => ({ set: () => ({ where: () => ({ returning: () => [] }) }) }),
     query: { brewingSessions: { findFirst: () => null } }
   };
 }
+
+export { db };
