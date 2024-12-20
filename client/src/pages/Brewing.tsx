@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Shield, Zap, Settings2 } from 'lucide-react'
+import { Shield, Zap, Settings2, Coffee } from 'lucide-react'
 import { TastingForm } from "@/components/TastingForm"
 import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
@@ -127,7 +127,7 @@ export default function BrewingPage() {
               });
               handleStart();
             }}
-            className="w-full flex items-center justify-center p-8 hover:bg-[#1e1e1e] rounded-lg transition-colors duration-200"
+            className="w-full text-right p-8 hover:bg-[#1e1e1e] rounded-lg transition-colors duration-200"
           >
             <Coffee className="w-12 h-12 text-[#888888] hover:text-[#f0f0f0] transition-colors duration-200" />
           </button>
