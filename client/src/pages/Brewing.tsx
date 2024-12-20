@@ -234,26 +234,28 @@ export default function BrewingPage() {
                                   method={settings.method}
                                   steps={updateSteps.data?.steps?.brewing || []}
                                   onUpdate={async (index, field, value) => {
-                                  // First update settings to trigger step recalculation
-                                  await updateSettings.mutateAsync(settings);
-                                  // Then update the specific step value
-                                  const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                  newSteps[index] = { ...newSteps[index], [field]: value };
-                                  await updateSteps.mutateAsync({
-                                    ...updateSteps.data,
-                                    steps: {
-                                    ...updateSteps.data?.steps,
-                                    brewing: newSteps
-                                  }
-                                });
-                              }}
-                              onClose={async () => {
-                                // Save changes when popover closes
-                                if (updateSteps.data) {
-                                  await updateSteps.mutateAsync(updateSteps.data);
-                                }
-                              }}
-                            />
+                                    // First update settings to trigger step recalculation
+                                    await updateSettings.mutateAsync(settings);
+                                    // Then update the specific step value
+                                    const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                    newSteps[index] = { ...newSteps[index], [field]: value };
+                                    await updateSteps.mutateAsync({
+                                      ...updateSteps.data,
+                                      steps: {
+                                        ...updateSteps.data?.steps,
+                                        brewing: newSteps
+                                      }
+                                    });
+                                  }}
+                                  onClose={async () => {
+                                    // Save changes when popover closes
+                                    if (updateSteps.data) {
+                                      await updateSteps.mutateAsync(updateSteps.data);
+                                    }
+                                  }}
+                                />
+                              )}
+                            </>
                           </div>
                         }
                       />
@@ -261,7 +263,7 @@ export default function BrewingPage() {
                       <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
                     </>
                   )}
-                  
+
                   {settings.method === 'French Press' && (
                     <>
                       <DetailRow label="Add Coffee" value={updateSteps.data.steps.addCoffee} />
@@ -283,26 +285,28 @@ export default function BrewingPage() {
                                   method={settings.method}
                                   steps={updateSteps.data?.steps?.brewing || []}
                                   onUpdate={async (index, field, value) => {
-                                  // First update settings to trigger step recalculation
-                                  await updateSettings.mutateAsync(settings);
-                                  // Then update the specific step value
-                                  const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                  newSteps[index] = { ...newSteps[index], [field]: value };
-                                  await updateSteps.mutateAsync({
-                                    ...updateSteps.data,
-                                    steps: {
-                                    ...updateSteps.data?.steps,
-                                    brewing: newSteps
-                                  }
-                                });
-                              }}
-                              onClose={async () => {
-                                // Save changes when popover closes
-                                if (updateSteps.data) {
-                                  await updateSteps.mutateAsync(updateSteps.data);
-                                }
-                              }}
-                            />
+                                    // First update settings to trigger step recalculation
+                                    await updateSettings.mutateAsync(settings);
+                                    // Then update the specific step value
+                                    const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                    newSteps[index] = { ...newSteps[index], [field]: value };
+                                    await updateSteps.mutateAsync({
+                                      ...updateSteps.data,
+                                      steps: {
+                                        ...updateSteps.data?.steps,
+                                        brewing: newSteps
+                                      }
+                                    });
+                                  }}
+                                  onClose={async () => {
+                                    // Save changes when popover closes
+                                    if (updateSteps.data) {
+                                      await updateSteps.mutateAsync(updateSteps.data);
+                                    }
+                                  }}
+                                />
+                              )}
+                            </>
                           </div>
                         }
                       />
@@ -310,7 +314,7 @@ export default function BrewingPage() {
                       <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
                     </>
                   )}
-                  
+
                   {settings.method === 'Espresso' && (
                     <>
                       <DetailRow label="Prep" value={updateSteps.data.steps.prep} />
