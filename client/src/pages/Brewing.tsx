@@ -1,6 +1,7 @@
 'use client'
 
-import { Shield, Box, Zap, Settings2 } from 'lucide-react'
+import { Shield, Zap, Settings2 } from 'lucide-react'
+import { TastingForm } from "@/components/TastingForm"
 import { toast } from "sonner"
 import { SettingsPopover } from "@/components/SettingsPopover"
 import { Card } from "@/components/ui/card"
@@ -266,21 +267,17 @@ export default function BrewingPage() {
               icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888]" />}
             />
 
-            <Card className="bg-[#1e1e1e] rounded-md p-3">
-              <SectionHeader
-                icon={<Box className="w-3 h-3 text-[#888888]" />}
-                title={
-                  <div className="flex items-center gap-1">
-                    <span>Summary</span>
-                    <span className="text-[#888888] text-[0.7rem]">V60 | 18g | 200ml</span>
-                  </div>
-                }
-                status={<span className="text-[#A3E635]">6/10</span>}
-              />
-              <DetailRow label="Aroma" value="5/10" />
-              <DetailRow label="Body" value="7/10" />
-              <DetailRow label="Aftertaste" value="9/10" />
-            </Card>
+            <TastingForm 
+              settings={{
+                method: settings.method,
+                coffee: settings.settings.coffee,
+                water_ratio: settings.settings.water_ratio,
+              }}
+              onSubmit={async (scores) => {
+                await updateTasting.mutateAsync(scores);
+                setCurrentStep(4);
+              }}
+            />
           </>
         )}
 
