@@ -26,12 +26,16 @@ interface Props {
 export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   const [open, setOpen] = React.useState(false);
   const [localSteps, setLocalSteps] = React.useState(steps);
+  const [isEditing, setIsEditing] = React.useState(false);
 
   React.useEffect(() => {
-    setLocalSteps(steps);
-  }, [steps]);
+    if (!isEditing) {
+      setLocalSteps(steps);
+    }
+  }, [steps, isEditing]);
 
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
+    setIsEditing(true);
     const newSteps = [...localSteps];
     if (field === 'amount') {
       const numericValue = value.replace(/\D/g, '');
@@ -53,24 +57,33 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
           <div className="space-y-2">
             {localSteps.map((step, index) => (
               <div key={`${step.step}-${index}`} className="grid gap-2">
-                <Label htmlFor={`step-${index}`}>{step.step}</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="relative">
+                    <Label htmlFor={`amount-${index}`}>{step.step} Amount</Label>
                     <Input
                       id={`amount-${index}`}
                       value={step.amount.replace('ml', '')}
-                      onChange={(e) => handleValueChange(index, 'amount', e.target.value)}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        handleValueChange(index, 'amount', newValue);
+                      }}
                       type="number"
-                      className="h-8 bg-[#2a2a2a] border-[#333333] pr-8"
+                      className="h-8 bg-[#2a2a2a] border-[#333333] pr-8 mt-1"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888888]">ml</span>
+                    <span className="absolute right-3 top-[60%] -translate-y-1/2 text-[#888888]">ml</span>
                   </div>
-                  <Input
-                    id={`time-${index}`}
-                    value={step.time}
-                    onChange={(e) => handleValueChange(index, 'time', e.target.value)}
-                    className="h-8 bg-[#2a2a2a] border-[#333333]"
-                  />
+                  <div>
+                    <Label htmlFor={`time-${index}`}>{step.step} Time</Label>
+                    <Input
+                      id={`time-${index}`}
+                      value={step.time}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        handleValueChange(index, 'time', newValue);
+                      }}
+                      className="h-8 bg-[#2a2a2a] border-[#333333] mt-1"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
