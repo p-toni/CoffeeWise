@@ -97,8 +97,10 @@ export default function BrewingPage() {
               <BeanSelector
                 isOpen={isBeanSelectorOpen}
                 onClose={() => setIsBeanSelectorOpen(false)}
-                onSelect={(path) => {
+                onSelect={async (path) => {
                   setSettings(prev => ({ ...prev, bean: path }));
+                  const result = await updateSettings.mutateAsync({ ...settings, bean: path });
+                  await updateSteps.mutateAsync();
                 }}
               />
             </>
@@ -114,8 +116,10 @@ export default function BrewingPage() {
               <MethodSelector
                 isOpen={isMethodSelectorOpen}
                 onClose={() => setMethodSelectorOpen(false)}
-                onSelect={(method) => {
+                onSelect={async (method) => {
                   setSettings(prev => ({ ...prev, method }));
+                  const result = await updateSettings.mutateAsync({ ...settings, method });
+                  await updateSteps.mutateAsync();
                 }}
               />
             </>
@@ -128,7 +132,9 @@ export default function BrewingPage() {
           <div className="mt-3 flex justify-end">
             <Button 
               onClick={async () => {
-                await updateSettings.mutateAsync(settings);
+                const result = await updateSettings.mutateAsync(settings);
+                // After settings are updated, update the brewing steps
+                await updateSteps.mutateAsync();
                 setCurrentStep(2);
               }}
               variant="outline"
@@ -171,24 +177,24 @@ export default function BrewingPage() {
 
               <DetailRow 
                 label="Rinse" 
-                value={updateSettings.data?.steps?.rinse?.join(" /")} 
+                value={updateSteps.data?.steps?.rinse?.join(" /")} 
               />
               <DetailRow 
                 label="Add Coffee" 
-                value={updateSettings.data?.steps?.addCoffee?.join(" /")} 
+                value={updateSteps.data?.steps?.addCoffee?.join(" /")} 
               />
               <DetailRow
                 label="Brewing"
                 value={
                   <div className="flex items-center justify-end gap-1">
-                    {updateSettings.data?.steps?.brewing && (
+                    {updateSteps.data?.steps?.brewing && (
                       <>
                         <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">Bloom | {updateSettings.data.steps.brewing.bloom}</span>
+                        <span className="text-[#cccccc]">Bloom | {updateSteps.data.steps.brewing.bloom}</span>
                         <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">First Pour | {updateSettings.data.steps.brewing.firstPour}</span>
+                        <span className="text-[#cccccc]">First Pour | {updateSteps.data.steps.brewing.firstPour}</span>
                         <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">Second Pour | {updateSettings.data.steps.brewing.secondPour}</span>
+                        <span className="text-[#cccccc]">Second Pour | {updateSteps.data.steps.brewing.secondPour}</span>
                       </>
                     )}
                   </div>
@@ -196,11 +202,11 @@ export default function BrewingPage() {
               />
               <DetailRow 
                 label="Dripping" 
-                value={updateSettings.data?.steps?.dripping} 
+                value={updateSteps.data?.steps?.dripping} 
               />
               <DetailRow 
                 label="Final Brew" 
-                value={updateSettings.data?.steps?.finalBrew} 
+                value={updateSteps.data?.steps?.finalBrew} 
               />
             </Card>
           </>
