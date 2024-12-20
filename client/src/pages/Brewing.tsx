@@ -228,11 +228,11 @@ export default function BrewingPage() {
                                 </React.Fragment>
                               ))}
                             </div>
-                            <BrewingStepsPopover
-                              queryClient={queryClient}
-                              method={settings.method}
-                              steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (index, field, value) => {
+                            {settings.method === 'V60' && (
+                              <BrewingStepsPopover
+                                method={settings.method}
+                                steps={updateSteps.data?.steps?.brewing || []}
+                                onUpdate={async (index, field, value) => {
                                 // First update settings to trigger step recalculation
                                 await updateSettings.mutateAsync(settings);
                                 // Then update the specific step value
@@ -276,11 +276,11 @@ export default function BrewingPage() {
                                 </React.Fragment>
                               ))}
                             </div>
-                            <BrewingStepsPopover
-                              queryClient={queryClient}
-                              method={settings.method}
-                              steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (index, field, value) => {
+                            {settings.method === 'V60' && (
+                              <BrewingStepsPopover
+                                method={settings.method}
+                                steps={updateSteps.data?.steps?.brewing || []}
+                                onUpdate={async (index, field, value) => {
                                 // First update settings to trigger step recalculation
                                 await updateSettings.mutateAsync(settings);
                                 // Then update the specific step value
@@ -314,7 +314,29 @@ export default function BrewingPage() {
                       <DetailRow label="Prep" value={updateSteps.data.steps.prep} />
                       <DetailRow label="Grind" value={updateSteps.data.steps.grind} />
                       <DetailRow label="Tamp" value={updateSteps.data.steps.tamp} />
-                      <DetailRow label="Shot" value={updateSteps.data.steps.shot} />
+                      <DetailRow 
+                        label="Shot" 
+                        value={
+                          <div className="flex items-center justify-end gap-2">
+                            <span>{updateSteps.data.steps.shot}</span>
+                            <BrewingStepsPopover
+                              method={settings.method}
+                              steps={[{ step: 'Shot', amount: updateSteps.data.steps.shot.split(' / ')[0], time: updateSteps.data.steps.shot.split(' / ')[1] }]}
+                              onUpdate={async (index, field, value) => {
+                                await updateSettings.mutateAsync(settings);
+                                const newSteps = {
+                                  ...updateSteps.data?.steps,
+                                  shot: `${field === 'amount' ? value : updateSteps.data.steps.shot.split(' / ')[0]} / ${field === 'time' ? value : updateSteps.data.steps.shot.split(' / ')[1]}`
+                                };
+                                await updateSteps.mutateAsync({
+                                  ...updateSteps.data,
+                                  steps: newSteps
+                                });
+                              }}
+                            />
+                          </div>
+                        } 
+                      />
                       <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
                     </>
                   )}
