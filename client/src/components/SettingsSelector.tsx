@@ -84,6 +84,10 @@ const InputWithLabel = ({
 export function SettingsSelector({ isOpen, onClose, settings, onUpdate }: SettingsSelectorProps) {
   const [localSettings, setLocalSettings] = React.useState(settings);
 
+  React.useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
+
   const handleSettingChange = (
     key: keyof BrewingSettings,
     value: number | string,
