@@ -151,15 +151,49 @@ Respond with a clear recommendation focusing on whether these settings are optim
       return res.status(404).json({ message: "Session not found" });
     }
 
-    const prompt = `Generate precise brewing steps for these settings:
-${JSON.stringify({
-  method: currentSession.method,
-  settings: currentSession.settings
-}, null, 2)}`;
+    const getMethodSteps = (method: string, settings: any) => {
+      const waterAmount = settings.coffee * settings.water_ratio;
+      
+      switch (method) {
+        case 'V60':
+          return {
+            rinse: 'Pour hot water through the filter. Discard the rinse water.',
+            addCoffee: 'Place the coffee into the filter. Gently shake the dripper to level.',
+            brewing: [
+              { step: 'Bloom', amount: `${Math.round(settings.coffee * 2)}ml`, time: '30s' },
+              { step: 'First Pour', amount: `${Math.round(waterAmount * 0.6)}ml`, time: '30s' },
+              { step: 'Second Pour', amount: `${Math.round(waterAmount * 0.4)}ml`, time: '30s' }
+            ],
+            dripping: '30s',
+            finalBrew: `${waterAmount}ml / 120s`
+          };
+        case 'French Press':
+          return {
+            addCoffee: 'Add coffee to the French Press',
+            brewing: [
+              { step: 'Add Water', amount: `${waterAmount}ml`, time: '0s' },
+              { step: 'Stir', amount: 'N/A', time: '10s' },
+              { step: 'Steep', amount: 'N/A', time: '4min' }
+            ],
+            plunge: '30s',
+            finalBrew: `${waterAmount}ml / 270s`
+          };
+        case 'Espresso':
+          return {
+            prep: 'Preheat machine and portafilter',
+            grind: 'Grind coffee fine, dose into portafilter',
+            tamp: 'Tamp with 30 lbs pressure, level and polish',
+            shot: `Pull shot: ${settings.coffee * 2}ml / 25-30s`,
+            finalBrew: `${settings.coffee * 2}ml / 30s`
+          };
+        default:
+          return {
+            error: 'Unsupported brewing method'
+          };
+      }
+    };
 
-    const result = await brewingStepsModel.generateContent(prompt);
-    const response = await result.response;
-    const steps = JSON.parse(response.text());
+    const steps = getMethodSteps(currentSession.method, currentSession.settings);
 
     const session = await db.update(brewingSessions)
       .set({ 

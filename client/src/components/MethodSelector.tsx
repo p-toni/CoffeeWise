@@ -18,11 +18,8 @@ interface MethodSelectorProps {
 
 const BREWING_METHODS = [
   { id: 'V60', name: 'V60' },
-  { id: 'Chemex', name: 'Chemex' },
-  { id: 'AeroPress', name: 'AeroPress' },
   { id: 'French Press', name: 'French Press' },
-  { id: 'Moka Pot', name: 'Moka Pot' },
-  { id: 'Cold Brew', name: 'Cold Brew' },
+  { id: 'Espresso', name: 'Espresso' },
 ];
 
 export function MethodSelector({ isOpen, onClose, onSelect }: MethodSelectorProps) {

@@ -119,10 +119,8 @@ export default function BrewingPage() {
               <MethodSelector
                 isOpen={isMethodSelectorOpen}
                 onClose={() => setMethodSelectorOpen(false)}
-                onSelect={async (method) => {
+                onSelect={(method) => {
                   setSettings(prev => ({ ...prev, method }));
-                  const result = await updateSettings.mutateAsync({ ...settings, method });
-                  await updateSteps.mutateAsync();
                 }}
               />
             </>
