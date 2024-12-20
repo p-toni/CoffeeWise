@@ -197,30 +197,62 @@ export default function BrewingPage() {
                 status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">200</span>}
               />
 
-              <DetailRow 
-                label="Rinse" 
-                value={`/Pour hot water through the filter. /Discard the rinse water.`}
-              />
-              <DetailRow 
-                label="Add Coffee" 
-                value={`/Place the coffee into the filter. /Gently shake the dripper to level.`}
-              />
-              <DetailRow
-                label="Brewing"
-                value={
-                  <div className="flex items-center justify-end gap-1">
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">Bloom | 45ml/30s</span>
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">First Pour | 105ml/120s</span>
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">Second Pour | 100ml/80s</span>
-                  </div>
-                }
-                valueClass=""
-              />
-              <DetailRow label="Dripping" value="30s" />
-              <DetailRow label="Final Brew" value="240ml / 180s" />
+              {updateSteps.data?.steps && (
+                <>
+                  {settings.method === 'V60' && (
+                    <>
+                      <DetailRow label="Rinse" value={updateSteps.data.steps.rinse} />
+                      <DetailRow label="Add Coffee" value={updateSteps.data.steps.addCoffee} />
+                      <DetailRow
+                        label="Brewing"
+                        value={
+                          <div className="flex items-center justify-end gap-1">
+                            {updateSteps.data.steps.brewing.map((step, index) => (
+                              <>
+                                <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                              </>
+                            ))}
+                          </div>
+                        }
+                      />
+                      <DetailRow label="Dripping" value={updateSteps.data.steps.dripping} />
+                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                    </>
+                  )}
+                  
+                  {settings.method === 'French Press' && (
+                    <>
+                      <DetailRow label="Add Coffee" value={updateSteps.data.steps.addCoffee} />
+                      <DetailRow
+                        label="Brewing"
+                        value={
+                          <div className="flex items-center justify-end gap-1">
+                            {updateSteps.data.steps.brewing.map((step, index) => (
+                              <>
+                                <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                              </>
+                            ))}
+                          </div>
+                        }
+                      />
+                      <DetailRow label="Plunge" value={updateSteps.data.steps.plunge} />
+                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                    </>
+                  )}
+                  
+                  {settings.method === 'Espresso' && (
+                    <>
+                      <DetailRow label="Prep" value={updateSteps.data.steps.prep} />
+                      <DetailRow label="Grind" value={updateSteps.data.steps.grind} />
+                      <DetailRow label="Tamp" value={updateSteps.data.steps.tamp} />
+                      <DetailRow label="Shot" value={updateSteps.data.steps.shot} />
+                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                    </>
+                  )}
+                </>
+              )}
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>
