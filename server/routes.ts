@@ -124,7 +124,12 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-Analyze the compatibility of these parameters and respond with a clear recommendation about whether these settings are optimal for the chosen method and bean. Consider extraction, temperature impact, and grind size appropriateness.`;
+Analyze the compatibility of these parameters and provide specific feedback about:
+1. Temperature suitability (92-96°C for V60, 90-94°C for dark roasts, 94-96°C for light roasts)
+2. Extraction potential with current grind size
+3. Overall parameter harmony for optimal extraction.
+
+Respond with clear recommendations for any parameters that need adjustment.`;
 
     const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
