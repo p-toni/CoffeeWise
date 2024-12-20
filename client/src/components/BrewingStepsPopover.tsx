@@ -34,24 +34,17 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
     const newSteps = [...localSteps];
     if (field === 'amount') {
-      // Extract number from value, keep 'ml' in display
       const numericValue = value.replace(/\D/g, '');
       newSteps[index] = { ...newSteps[index], [field]: `${numericValue}ml` };
     } else {
       newSteps[index] = { ...newSteps[index], [field]: value };
     }
     setLocalSteps(newSteps);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      onUpdate(localSteps);
-    }
-    setOpen(newOpen);
+    onUpdate(newSteps);
   };
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <Settings2 className="w-4 h-4 text-[#888888] hover:text-[#cccccc] transition-colors cursor-pointer" />
       </PopoverTrigger>
