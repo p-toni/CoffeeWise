@@ -7,7 +7,14 @@ import { useBrewing } from "@/context/BrewingContext"
 import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } from "@/lib/brewing"
 import { useState } from "react"
 
-const SectionHeader = ({ icon, title, status, statusColor = 'text-[#888888]' }) => (
+interface SectionHeaderProps {
+  icon?: React.ReactNode;
+  title: string | React.ReactNode;
+  status?: React.ReactNode;
+  statusColor?: string;
+}
+
+const SectionHeader = ({ icon, title, status, statusColor = 'text-[#888888]' }: SectionHeaderProps) => (
   <div className="flex items-center gap-2 text-[#bbbbbb] py-1">
     {icon && <span className="relative bottom-[1px] text-[0.75rem]">{icon}</span>}
     <span className="text-sm font-normal">{title}</span>
@@ -15,7 +22,13 @@ const SectionHeader = ({ icon, title, status, statusColor = 'text-[#888888]' }) 
   </div>
 );
 
-const DetailRow = ({ label, value, valueClass = 'text-[#cccccc]' }) => (
+interface DetailRowProps {
+  label: string;
+  value: React.ReactNode;
+  valueClass?: string;
+}
+
+const DetailRow = ({ label, value, valueClass = 'text-[#cccccc]' }: DetailRowProps) => (
   <div className="grid grid-cols-[95px_1fr] gap-y-0.5 py-0.5">
     <div className="text-[#888888] text-sm">{label}</div>
     <div className={`text-sm text-right ${valueClass}`}>{value}</div>
