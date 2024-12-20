@@ -24,6 +24,7 @@ interface Props {
 }
 
 export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
+  const [open, setOpen] = React.useState(false);
   const [localSteps, setLocalSteps] = React.useState(steps);
 
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
@@ -34,8 +35,8 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger onClick={() => setOpen(true)}>
         <Settings2 className="w-4 h-4 text-[#888888] hover:text-[#cccccc] transition-colors cursor-pointer" />
       </PopoverTrigger>
       <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#cccccc]">
