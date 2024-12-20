@@ -124,12 +124,16 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-Analyze the compatibility of these parameters and provide specific feedback about:
-1. Temperature suitability (92-96°C for V60, 90-94°C for dark roasts, 94-96°C for light roasts)
-2. Extraction potential with current grind size
-3. Overall parameter harmony for optimal extraction.
+As a specialty coffee expert, analyze these brewing parameters considering:
 
-Respond with clear recommendations for any parameters that need adjustment.`;
+1. Temperature's impact on flavor development and extraction kinetics
+2. Grind size distribution's effect on extraction uniformity
+3. The relationship between dose, ratio, and extraction potential
+4. How these parameters might affect the bean's inherent characteristics
+
+Consider potential flavor notes, mouthfeel, and balance. Provide clear, actionable adjustments if needed, explaining their impact on the final cup profile.
+
+Keep the response concise yet technically precise, focusing on maximizing sweetness, clarity, and overall cup quality.`;
 
     const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
