@@ -324,8 +324,9 @@ export default function BrewingPage() {
                         label="Shot" 
                         value={
                           <div className="flex items-center justify-end gap-2">
-                            <span>{updateSteps.data.steps.shot}</span>
-                            <BrewingStepsPopover
+                            <>
+                              <span>{updateSteps.data.steps.shot}</span>
+                              <BrewingStepsPopover
                               method={settings.method}
                               steps={[{ 
                                 step: 'Shot', 
