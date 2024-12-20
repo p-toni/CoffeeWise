@@ -12,7 +12,7 @@ import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } 
 import { useState } from "react"
 import { MethodSelector } from "@/components/MethodSelector"
 import { BeanSelector } from "@/components/BeanSelector"
-import { BrewingStepsPopover } from "@/components/BrewingStepsPopover"
+import { BrewingStepsModal } from "@/components/BrewingStepsModal"
 import { queryClient } from "@/lib/queryClient"
 
 interface SectionHeaderProps {
