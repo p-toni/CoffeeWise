@@ -201,49 +201,28 @@ export default function BrewingPage() {
 
               <DetailRow 
                 label="Rinse" 
-                value={`Heat water to ${settings.settings.water_temp}°C / Pour over the filter and preheat the brewer.`}
+                value={`/Pour hot water through the filter. /Discard the rinse water.`}
               />
               <DetailRow 
                 label="Add Coffee" 
-                value={`Add ${settings.settings.coffee}g`}
+                value={`/Place the coffee into the filter. /Gently shake the dripper to level.`}
               />
               <DetailRow
                 label="Brewing"
                 value={
-                  <div className="text-right space-y-2">
-                    {updateSteps.data?.steps?.brewing && (
-                      <>
-                        <div className="text-[#cccccc]">
-                          Bloom | Pour {updateSteps.data.steps.brewing.bloom} of {settings.settings.water_temp}°C water, 30s
-                        </div>
-                        <div className="text-[#cccccc]">
-                          First Pour | {updateSteps.data.steps.brewing.firstPour} in circular motion, 45s
-                        </div>
-                        <div className="text-[#cccccc]">
-                          Second Pour | {updateSteps.data.steps.brewing.secondPour} to finish, 30s
-                        </div>
-                      </>
-                    )}
+                  <div className="flex items-center justify-end gap-1">
+                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                    <span className="text-[#cccccc]">Bloom | 45ml/30s</span>
+                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                    <span className="text-[#cccccc]">First Pour | 105ml/120s</span>
+                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                    <span className="text-[#cccccc]">Second Pour | 100ml/80s</span>
                   </div>
                 }
                 valueClass=""
               />
-              <DetailRow 
-                label="Dripping" 
-                value={
-                  <div className="text-right">
-                    <span className="text-[#cccccc]">30s</span>
-                  </div>
-                }
-              />
-              <DetailRow 
-                label="Final Brew" 
-                value={
-                  <div className="text-right">
-                    <span className="text-[#cccccc]">Remove the V60 and enjoy your coffee.</span>
-                  </div>
-                }
-              />
+              <DetailRow label="Dripping" value="30s" />
+              <DetailRow label="Final Brew" value="240ml / 180s" />
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>

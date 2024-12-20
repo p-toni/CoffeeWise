@@ -115,8 +115,12 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
-    const prompt = `As a coffee expert, analyze these brewing settings and provide a recommendation:
-${JSON.stringify({ bean, method, settings }, null, 2)}`;
+    const prompt = `Analyze these coffee brewing settings and provide a concise recommendation:
+Bean: ${bean}
+Method: ${method}
+Settings: ${JSON.stringify(settings)}
+
+Respond with a clear recommendation focusing on whether these settings are optimal for the chosen method and bean.`;
 
     const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
