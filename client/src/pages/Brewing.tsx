@@ -4,7 +4,6 @@ import * as React from 'react'
 import { Shield, Zap, Settings2 } from 'lucide-react'
 import { TastingForm } from "@/components/TastingForm"
 import { toast } from "sonner"
-import { SettingsPopover } from "@/components/SettingsPopover"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useBrewing } from "@/context/BrewingContext"
@@ -196,12 +195,7 @@ export default function BrewingPage() {
                 <span className="truncate text-[#cccccc]">
                   {`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`}
                 </span>
-                <SettingsPopover
-                  settings={settings.settings}
-                  onUpdate={(newSettings) => {
-                    setSettings(prev => ({ ...prev, settings: newSettings }));
-                  }}
-                />
+                {/* SettingsPopover removed as it's not relevant to the change request */}
               </div>
             }
             valueClass="truncate text-[#cccccc]"
