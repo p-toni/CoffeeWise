@@ -151,15 +151,20 @@ export default function BrewingPage() {
               icon={<Shield className="w-3 h-3 text-[#888888]" />}
               title="Recommendation"
               status={
-                <span 
+                <button
+                  onClick={() => {
+                    if (updateSettings.data?.recommendation?.message) {
+                      alert(updateSettings.data.recommendation.message);
+                    }
+                  }}
                   className={`bg-[#333333] px-1 rounded ${
                     updateSettings.data?.recommendation?.status === "Allowed" 
                       ? "text-[#A3E635]" 
                       : "text-red-500"
-                  }`}
+                  } hover:bg-[#444444] transition-colors cursor-pointer`}
                 >
                   {updateSettings.data?.recommendation?.status || "Pending"}
-                </span>
+                </button>
               }
             />
 

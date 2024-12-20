@@ -32,13 +32,17 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
-    const prompt = `You are a coffee expert. Analyze these brewing settings and provide a recommendation:
+    const prompt = `As a coffee expert, analyze these brewing settings:
 ${JSON.stringify({ bean, method, settings }, null, 2)}
 
-Respond with a JSON object in this format:
+Respond with a JSON object following these rules:
+1. Keep the message under 100 characters
+2. Use "Allowed" if the combination is good, "Unallowed" if it needs adjustment
+3. Focus on the most critical factor in the message
+
 {
   "status": "Allowed" or "Unallowed",
-  "message": "Your detailed recommendation explaining why"
+  "message": "Concise feedback about the most important factor"
 }`;
 
     const result = await model.generateContent(prompt);
