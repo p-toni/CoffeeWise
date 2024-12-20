@@ -27,30 +27,15 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   const [open, setOpen] = React.useState(false);
   const [localSteps, setLocalSteps] = React.useState(steps);
 
-  React.useEffect(() => {
-    setLocalSteps(steps);
-  }, [steps]);
-
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
     const newSteps = [...localSteps];
     newSteps[index] = { ...newSteps[index], [field]: value };
     setLocalSteps(newSteps);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen && !arraysEqual(localSteps, steps)) {
-      onUpdate(localSteps);
-    }
-    setOpen(newOpen);
-  };
-
-  // Helper function to compare arrays
-  const arraysEqual = (a: BrewingStepSettings[], b: BrewingStepSettings[]) => {
-    return JSON.stringify(a) === JSON.stringify(b);
+    onUpdate(newSteps);
   };
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <Settings2 className="w-4 h-4 text-[#888888] hover:text-[#cccccc] transition-colors cursor-pointer" />
       </PopoverTrigger>
