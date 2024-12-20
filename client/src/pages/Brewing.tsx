@@ -230,16 +230,23 @@ export default function BrewingPage() {
                             <BrewingStepsPopover
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (index, field, value) => {
+                              onUpdate={(index, field, value) => {
                                 const newSteps = [...updateSteps.data?.steps?.brewing || []];
                                 newSteps[index] = { ...newSteps[index], [field]: value };
-                                await updateSteps.mutateAsync({
+                                // Update local state first
+                                queryClient.setQueryData(['brewing', 'steps'], {
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
                                     brewing: newSteps
                                   }
                                 });
+                              }}
+                              onClose={async () => {
+                                // Save changes when popover closes
+                                if (updateSteps.data) {
+                                  await updateSteps.mutateAsync(updateSteps.data);
+                                }
                               }}
                             />
                           </div>
@@ -268,16 +275,23 @@ export default function BrewingPage() {
                             <BrewingStepsPopover
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (index, field, value) => {
+                              onUpdate={(index, field, value) => {
                                 const newSteps = [...updateSteps.data?.steps?.brewing || []];
                                 newSteps[index] = { ...newSteps[index], [field]: value };
-                                await updateSteps.mutateAsync({
+                                // Update local state first
+                                queryClient.setQueryData(['brewing', 'steps'], {
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
                                     brewing: newSteps
                                   }
                                 });
+                              }}
+                              onClose={async () => {
+                                // Save changes when popover closes
+                                if (updateSteps.data) {
+                                  await updateSteps.mutateAsync(updateSteps.data);
+                                }
                               }}
                             />
                           </div>
