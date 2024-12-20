@@ -43,7 +43,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
       <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#cccccc]">
         <div className="grid gap-4">
           <div className="space-y-2">
-            {localSteps.map((step, index) => (
+            {steps.map((step, index) => (
               <div key={`${step.step}-${index}`} className="grid gap-2">
                 <Label htmlFor={`step-${index}`}>{step.step}</Label>
                 <div className="grid grid-cols-2 gap-2">
