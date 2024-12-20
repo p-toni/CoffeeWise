@@ -177,9 +177,10 @@ export default function BrewingPage() {
                   }}
                   className={`bg-[#333333] px-1 rounded ${
                     updateSettings.data?.recommendation?.status === "Allowed" 
-                      ? "text-[#A3E635]" 
-                      : "text-red-500"
+                      ? "text-[#A3E635] hover:text-[#bef264]" 
+                      : "text-red-500 hover:text-red-400"
                   } hover:bg-[#444444] transition-colors cursor-pointer`}
+                  title="Click to see recommendation details"
                 >
                   {updateSettings.data?.recommendation?.status || "Pending"}
                 </button>
