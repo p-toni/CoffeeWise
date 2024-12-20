@@ -4,10 +4,93 @@ import { db } from "@db";
 import { brewingSessions } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+// Define schemas for structured responses
+const recommendationSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    status: {
+      type: SchemaType.STRING,
+      enum: ["Allowed", "Unallowed"],
+      description: "Whether the brewing configuration is recommended",
+    },
+    message: {
+      type: SchemaType.STRING,
+      description: "A concise feedback message under 100 characters",
+    },
+  },
+  required: ["status", "message"],
+};
+
+const brewingStepsSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    rinse: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING },
+      description: "Steps for rinsing the filter",
+    },
+    addCoffee: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING },
+      description: "Steps for adding coffee",
+    },
+    brewing: {
+      type: SchemaType.OBJECT,
+      properties: {
+        bloom: { type: SchemaType.STRING },
+        firstPour: { type: SchemaType.STRING },
+        secondPour: { type: SchemaType.STRING },
+      },
+      required: ["bloom", "firstPour", "secondPour"],
+    },
+    dripping: { type: SchemaType.STRING },
+    finalBrew: { type: SchemaType.STRING },
+  },
+  required: ["rinse", "addCoffee", "brewing", "dripping", "finalBrew"],
+};
+
+// Create models with specific schemas
+const recommendationModel = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash-exp",
+  generationConfig: {
+    temperature: 0.7,
+    topK: 1,
+    topP: 1,
+    maxOutputTokens: 200,
+    stopSequences: [],
+    responseMimeType: "application/json",
+    responseSchema: recommendationSchema,
+  },
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ],
+});
+
+const brewingStepsModel = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash-exp",
+  generationConfig: {
+    temperature: 0.7,
+    topK: 1,
+    topP: 1,
+    maxOutputTokens: 1000,
+    stopSequences: [],
+    responseMimeType: "application/json",
+    responseSchema: brewingStepsSchema,
+  },
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ],
+});
 
 export function registerRoutes(app: Express): Server {
   app.post("/api/brewing/start", async (req, res) => {
@@ -32,26 +115,12 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
-    const prompt = `As a coffee expert, analyze these brewing settings:
-${JSON.stringify({ bean, method, settings }, null, 2)}
+    const prompt = `As a coffee expert, analyze these brewing settings and provide a recommendation:
+${JSON.stringify({ bean, method, settings }, null, 2)}`;
 
-Respond with a JSON object following these rules:
-1. Keep the message under 100 characters
-2. Use "Allowed" if the combination is good, "Unallowed" if it needs adjustment
-3. Focus on the most critical factor in the message
-
-{
-  "status": "Allowed" or "Unallowed",
-  "message": "Concise feedback about the most important factor"
-}`;
-
-    const result = await model.generateContent(prompt);
+    const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
-    const text = response.text();
-    
-    // Clean up the response text by removing markdown formatting
-    const cleanedText = text.replace(/```json\n|\n```/g, '').trim();
-    const recommendation = JSON.parse(cleanedText);
+    const recommendation = JSON.parse(response.text());
 
     const session = await db.update(brewingSessions)
       .set({ 
@@ -78,30 +147,15 @@ Respond with a JSON object following these rules:
       return res.status(404).json({ message: "Session not found" });
     }
 
-    const prompt = `You are a coffee brewing expert. Generate brewing steps for the following settings:
+    const prompt = `Generate precise brewing steps for these settings:
 ${JSON.stringify({
   method: currentSession.method,
   settings: currentSession.settings
-}, null, 2)}
+}, null, 2)}`;
 
-Respond with a JSON object containing the brewing steps in this format:
-{
-  "rinse": ["Pour hot water through the filter", "Discard the rinse water"],
-  "addCoffee": ["Place the coffee into the filter", "Gently shake the dripper to level"],
-  "brewing": {
-    "bloom": "45ml/30s",
-    "firstPour": "105ml/120s",
-    "secondPour": "100ml/80s"
-  },
-  "dripping": "30s",
-  "finalBrew": "240ml / 180s"
-}`;
-
-    const result = await model.generateContent(prompt);
+    const result = await brewingStepsModel.generateContent(prompt);
     const response = await result.response;
-    const text = response.text();
-    const cleanedText = text.replace(/```json\n|\n```/g, '').trim();
-    const steps = JSON.parse(cleanedText);
+    const steps = JSON.parse(response.text());
 
     const session = await db.update(brewingSessions)
       .set({ 
