@@ -82,13 +82,93 @@ export default function BrewingPage() {
         {/* Settings Card */}
         <Card className="bg-[#1e1e1e] rounded-md p-3">
           <DetailRow label="Brewing ID" value={brewingId} />
-          <DetailRow label="Bean" value={settings.bean} />
-          <DetailRow label="Method" value={settings.method} />
-          <DetailRow 
-            label="Settings" 
-            value={`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`} 
-            valueClass="truncate text-[#cccccc]" 
-          />
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-[#888888]">Bean:</label>
+              <input
+                type="text"
+                value={settings.bean}
+                onChange={(e) => setSettings(prev => ({ ...prev, bean: e.target.value }))}
+                className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-[#888888]">Method:</label>
+              <select
+                value={settings.method}
+                onChange={(e) => setSettings(prev => ({ ...prev, method: e.target.value }))}
+                className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+              >
+                <option value="V60">V60</option>
+                <option value="Chemex">Chemex</option>
+                <option value="AeroPress">AeroPress</option>
+                <option value="French Press">French Press</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-[#888888]">Coffee (g):</label>
+                <input
+                  type="number"
+                  value={settings.settings.coffee}
+                  onChange={(e) => setSettings(prev => ({ 
+                    ...prev, 
+                    settings: { ...prev.settings, coffee: parseInt(e.target.value) }
+                  }))}
+                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-[#888888]">Water Ratio:</label>
+                <input
+                  type="number"
+                  value={settings.settings.water_ratio}
+                  onChange={(e) => setSettings(prev => ({ 
+                    ...prev, 
+                    settings: { ...prev.settings, water_ratio: parseInt(e.target.value) }
+                  }))}
+                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-[#888888]">Grind:</label>
+                <select
+                  value={settings.settings.grind_size}
+                  onChange={(e) => setSettings(prev => ({ 
+                    ...prev, 
+                    settings: { ...prev.settings, grind_size: e.target.value }
+                  }))}
+                  className="flex-1 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+                >
+                  <option value="fine">Fine</option>
+                  <option value="medium-fine">Medium Fine</option>
+                  <option value="medium">Medium</option>
+                  <option value="coarse">Coarse</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-[#888888]">Temp (°C):</label>
+                <input
+                  type="number"
+                  value={settings.settings.water_temp}
+                  onChange={(e) => setSettings(prev => ({ 
+                    ...prev, 
+                    settings: { ...prev.settings, water_temp: parseInt(e.target.value) }
+                  }))}
+                  className="w-16 bg-[#2a2a2a] text-[#cccccc] text-sm p-1 rounded"
+                />
+              </div>
+            </div>
+            <Button 
+              onClick={async () => {
+                await updateSettings.mutateAsync(settings);
+                setCurrentStep(2);
+              }}
+              className="w-full mt-2"
+            >
+              Update Settings
+            </Button>
+          </div>
         </Card>
 
         {currentStep >= 2 && (
@@ -96,10 +176,25 @@ export default function BrewingPage() {
             <SectionHeader
               icon={<Shield className="w-3 h-3 text-[#888888]" />}
               title="Recommendation"
-              status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">Allowed</span>}
+              status={
+                <span 
+                  className={`bg-[#333333] px-1 rounded ${
+                    updateSettings.data?.recommendation?.status === "Allowed" 
+                      ? "text-[#A3E635]" 
+                      : "text-red-500"
+                  }`}
+                >
+                  {updateSettings.data?.recommendation?.status || "Pending"}
+                </span>
+              }
             />
 
             <Card className="bg-[#1e1e1e] rounded-md p-3">
+              {updateSettings.data?.recommendation?.message && (
+                <p className="text-sm text-[#cccccc] mb-3">
+                  {updateSettings.data.recommendation.message}
+                </p>
+              )}
               <SectionHeader
                 icon={<Zap className="w-3 h-3 text-[#888888]" />}
                 title="Brewing steps"
