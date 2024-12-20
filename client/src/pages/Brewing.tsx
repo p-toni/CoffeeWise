@@ -66,26 +66,37 @@ export default function BrewingPage() {
 
   const handleUpdateSteps = async (newSteps: any, type: 'brewing' | 'shot' = 'brewing') => {
     try {
+      console.log('Updating steps with:', { type, newSteps });
+      const currentData = updateSteps.data;
+      console.log('Current data:', currentData);
+
+      let updatedData;
       if (type === 'brewing') {
-        await updateSteps.mutateAsync({
-          ...updateSteps.data,
+        updatedData = {
+          ...currentData,
           steps: {
-            ...updateSteps.data?.steps,
+            ...currentData?.steps,
             brewing: newSteps
           }
-        });
+        };
       } else {
-        await updateSteps.mutateAsync({
-          ...updateSteps.data,
+        updatedData = {
+          ...currentData,
           steps: {
-            ...updateSteps.data?.steps,
+            ...currentData?.steps,
             shot: `${newSteps[0].amount} / ${newSteps[0].time}`
           }
-        });
+        };
       }
-      
-      // Invalidate queries to refresh the UI
+
+      console.log('Sending updated data:', updatedData);
+      const response = await updateSteps.mutateAsync(updatedData);
+      console.log('Received response:', response);
+
+      // Force refetch the data
       await queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
+      await queryClient.refetchQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
+      
       toast.success("Steps updated successfully");
     } catch (error) {
       console.error('Failed to update steps:', error);

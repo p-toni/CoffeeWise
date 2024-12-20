@@ -32,23 +32,33 @@ export const useUpdateSettings = (brewingId: string) => {
 export const useUpdateSteps = (brewingId: string) => {
   return useMutation({
     mutationFn: async (data: any) => {
+      console.log('useUpdateSteps mutation called with:', data);
       const res = await fetch(`/api/brewing/${brewingId}/steps`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
       if (!res.ok) {
         const error = await res.text();
+        console.error('Update steps failed:', error);
         throw new Error(error || "Failed to update steps");
       }
-      return res.json();
+
+      const responseData = await res.json();
+      console.log('Update steps response:', responseData);
+      return responseData;
     },
-    onSuccess: () => {
-      // Invalidate both the steps and settings queries since they're related
-      queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/settings`] });
+    onSuccess: async (data) => {
+      console.log('Update steps succeeded:', data);
+      // Force a refetch of the data
+      await queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
+      return queryClient.refetchQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
     },
+    onError: (error) => {
+      console.error('Update steps mutation error:', error);
+    }
   });
 };
 
