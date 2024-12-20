@@ -336,7 +336,7 @@ export default function BrewingPage() {
                                 await updateSettings.mutateAsync(settings);
                                 const newSteps = {
                                   ...updateSteps.data?.steps,
-                                  shot: `${field === 'amount' ? value : updateSteps.data.steps.shot.split(' / ')[0]} / ${field === 'time' ? value : updateSteps.data.steps.shot.split(' / ')[1]}`
+                                  shot: `${field === 'amount' ? value : (updateSteps.data?.steps?.shot?.split(' / ')?.[0] || '0ml')} / ${field === 'time' ? value : (updateSteps.data?.steps?.shot?.split(' / ')?.[1] || '0s')}`
                                 };
                                 await updateSteps.mutateAsync({
                                   ...updateSteps.data,
