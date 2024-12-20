@@ -54,7 +54,9 @@ export function BrewingSteps({ isOpen, onClose, method, steps, onUpdate }: Props
   const [localSteps, setLocalSteps] = React.useState(steps);
 
   React.useEffect(() => {
-    setLocalSteps(steps);
+    if (steps && steps.length > 0) {
+      setLocalSteps(steps);
+    }
   }, [steps]);
 
   const handleValueChange = (
