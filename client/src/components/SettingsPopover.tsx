@@ -58,12 +58,10 @@ const InputWithLabel = ({
         value={value}
         onChange={(e) => {
           const newValue = Number(e.target.value)
-          if (newValue >= min && newValue <= max) {
+          if (!isNaN(newValue) && newValue > 0) {
             onChange(newValue)
           }
         }}
-        min={min}
-        max={max}
         className={cn(
           "bg-[#2a2a2a] border-[#333333] text-[#f0f0f0]",
           "focus:border-[#444444] focus:ring-[#444444]",
@@ -102,8 +100,6 @@ export function SettingsPopover({ settings, onUpdate }: SettingsPopoverProps) {
             label="Coffee Amount"
             id="coffee"
             value={localSettings.coffee}
-            min={12}
-            max={30}
             onChange={(value) => handleSettingChange('coffee', value)}
             unit="g"
           />
@@ -112,8 +108,6 @@ export function SettingsPopover({ settings, onUpdate }: SettingsPopoverProps) {
             label="Water Ratio"
             id="ratio"
             value={localSettings.water_ratio}
-            min={14}
-            max={18}
             onChange={(value) => handleSettingChange('water_ratio', value)}
             prefix="1:"
           />
@@ -122,8 +116,6 @@ export function SettingsPopover({ settings, onUpdate }: SettingsPopoverProps) {
             label="Water Temperature"
             id="temp"
             value={localSettings.water_temp}
-            min={85}
-            max={96}
             onChange={(value) => handleSettingChange('water_temp', value)}
             unit="°C"
           />
