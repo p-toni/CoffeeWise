@@ -76,6 +76,12 @@ export default function BrewingPage() {
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
     method: "V60",
+    settings: {
+      coffee: 18,
+      water_ratio: 16,
+      grind_size: "medium",
+      water_temp: 92,
+    },
     brewingMethods: {
       V60: {
         coffee: 18,
