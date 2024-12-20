@@ -6,9 +6,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Slider } from "@/components/ui/slider"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Settings2 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface BrewingSettings {
   coffee: number
@@ -21,6 +22,63 @@ interface SettingsPopoverProps {
   settings: BrewingSettings
   onUpdate: (settings: BrewingSettings) => void
 }
+
+const InputWithLabel = ({ 
+  label, 
+  id, 
+  value, 
+  min, 
+  max, 
+  onChange,
+  unit = "",
+  prefix = ""
+}: { 
+  label: string
+  id: string
+  value: number
+  min: number
+  max: number
+  onChange: (value: number) => void
+  unit?: string
+  prefix?: string
+}) => (
+  <div className="space-y-2">
+    <Label htmlFor={id} className="text-sm text-[#bbbbbb]">
+      {label}
+    </Label>
+    <div className="relative">
+      {prefix && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#888888]">
+          {prefix}
+        </span>
+      )}
+      <Input
+        id={id}
+        type="number"
+        value={value}
+        onChange={(e) => {
+          const newValue = Number(e.target.value)
+          if (newValue >= min && newValue <= max) {
+            onChange(newValue)
+          }
+        }}
+        min={min}
+        max={max}
+        className={cn(
+          "bg-[#2a2a2a] border-[#333333] text-[#f0f0f0]",
+          "focus:border-[#444444] focus:ring-[#444444]",
+          "text-right pr-8",
+          prefix && "pl-7"
+        )}
+      />
+      {unit && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#888888]">
+          {unit}
+        </span>
+      )}
+    </div>
+  </div>
+);
 
 export function SettingsPopover({ settings, onUpdate }: SettingsPopoverProps) {
   const [localSettings, setLocalSettings] = React.useState(settings)
@@ -38,62 +96,53 @@ export function SettingsPopover({ settings, onUpdate }: SettingsPopoverProps) {
           <Settings2 className="h-4 w-4" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]">
+      <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#f0f0f0] p-4">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="coffee">Coffee (g)</Label>
-            <Slider
-              id="coffee"
-              min={12}
-              max={30}
-              step={1}
-              value={[localSettings.coffee]}
-              onValueChange={(value) => handleSettingChange('coffee', value[0])}
-              className="w-full"
-            />
-            <div className="text-right text-sm text-[#888888]">{localSettings.coffee}g</div>
-          </div>
+          <InputWithLabel
+            label="Coffee Amount"
+            id="coffee"
+            value={localSettings.coffee}
+            min={12}
+            max={30}
+            onChange={(value) => handleSettingChange('coffee', value)}
+            unit="g"
+          />
+
+          <InputWithLabel
+            label="Water Ratio"
+            id="ratio"
+            value={localSettings.water_ratio}
+            min={14}
+            max={18}
+            onChange={(value) => handleSettingChange('water_ratio', value)}
+            prefix="1:"
+          />
+
+          <InputWithLabel
+            label="Water Temperature"
+            id="temp"
+            value={localSettings.water_temp}
+            min={85}
+            max={96}
+            onChange={(value) => handleSettingChange('water_temp', value)}
+            unit="°C"
+          />
 
           <div className="space-y-2">
-            <Label htmlFor="ratio">Water Ratio (1:{localSettings.water_ratio})</Label>
-            <Slider
-              id="ratio"
-              min={14}
-              max={18}
-              step={1}
-              value={[localSettings.water_ratio]}
-              onValueChange={(value) => handleSettingChange('water_ratio', value[0])}
-              className="w-full"
-            />
-            <div className="text-right text-sm text-[#888888]">1:{localSettings.water_ratio}</div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="temp">Water Temperature (°C)</Label>
-            <Slider
-              id="temp"
-              min={85}
-              max={96}
-              step={1}
-              value={[localSettings.water_temp]}
-              onValueChange={(value) => handleSettingChange('water_temp', value[0])}
-              className="w-full"
-            />
-            <div className="text-right text-sm text-[#888888]">{localSettings.water_temp}°C</div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="grind">Grind Size</Label>
+            <Label htmlFor="grind" className="text-sm text-[#bbbbbb]">
+              Grind Size
+            </Label>
             <div className="grid grid-cols-3 gap-2">
               {['fine', 'medium', 'coarse'].map((size) => (
                 <button
                   key={size}
                   onClick={() => handleSettingChange('grind_size', size)}
-                  className={`px-3 py-1.5 text-sm rounded ${
+                  className={cn(
+                    "px-3 py-1.5 text-sm rounded transition-colors",
                     localSettings.grind_size === size
-                      ? 'bg-[#333333] text-white'
-                      : 'hover:bg-[#2a2a2a] text-[#888888]'
-                  }`}
+                      ? "bg-[#333333] text-white"
+                      : "text-[#888888] hover:bg-[#2a2a2a] hover:text-[#f0f0f0]"
+                  )}
                 >
                   {size.charAt(0).toUpperCase() + size.slice(1)}
                 </button>
