@@ -207,11 +207,11 @@ export default function BrewingPage() {
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-1">
-                            {updateSteps.data.steps.brewing.map((step, index) => (
-                              <>
+                            {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                              <React.Fragment key={`${step.step}-${index}`}>
                                 <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
                                 <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                              </>
+                              </React.Fragment>
                             ))}
                           </div>
                         }
@@ -228,11 +228,11 @@ export default function BrewingPage() {
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-1">
-                            {updateSteps.data.steps.brewing.map((step, index) => (
-                              <>
+                            {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                              <React.Fragment key={`${step.step}-${index}`}>
                                 <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
                                 <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                              </>
+                              </React.Fragment>
                             ))}
                           </div>
                         }
