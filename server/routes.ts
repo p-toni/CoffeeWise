@@ -65,7 +65,39 @@ Respond with a JSON object in this format:
 
   app.post("/api/brewing/:id/steps", async (req, res) => {
     const { id } = req.params;
-    const steps = req.body;
+    // Get the current session to access settings
+    const currentSession = await db.query.brewingSessions.findFirst({
+      where: eq(brewingSessions.brewingId, id)
+    });
+
+    if (!currentSession) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    const prompt = `You are a coffee brewing expert. Generate brewing steps for the following settings:
+${JSON.stringify({
+  method: currentSession.method,
+  settings: currentSession.settings
+}, null, 2)}
+
+Respond with a JSON object containing the brewing steps in this format:
+{
+  "rinse": ["Pour hot water through the filter", "Discard the rinse water"],
+  "addCoffee": ["Place the coffee into the filter", "Gently shake the dripper to level"],
+  "brewing": {
+    "bloom": "45ml/30s",
+    "firstPour": "105ml/120s",
+    "secondPour": "100ml/80s"
+  },
+  "dripping": "30s",
+  "finalBrew": "240ml / 180s"
+}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    const cleanedText = text.replace(/```json\n|\n```/g, '').trim();
+    const steps = JSON.parse(cleanedText);
 
     const session = await db.update(brewingSessions)
       .set({ 

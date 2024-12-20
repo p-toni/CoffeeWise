@@ -169,23 +169,39 @@ export default function BrewingPage() {
                 status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">200</span>}
               />
 
-              <DetailRow label="Rinse" value="/Pour hot water through the filter. /Discard the rinse water." />
-              <DetailRow label="Add Coffee" value="/Place the coffee into the filter. /Gently shake the dripper to level." />
+              <DetailRow 
+                label="Rinse" 
+                value={updateSettings.data?.steps?.rinse?.join(" /")} 
+              />
+              <DetailRow 
+                label="Add Coffee" 
+                value={updateSettings.data?.steps?.addCoffee?.join(" /")} 
+              />
               <DetailRow
                 label="Brewing"
                 value={
                   <div className="flex items-center justify-end gap-1">
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">Bloom | 45ml/30s</span>
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">First Pour | 105ml/120s</span>
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#cccccc]">Second Pour | 100ml/80s</span>
+                    {updateSettings.data?.steps?.brewing && (
+                      <>
+                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                        <span className="text-[#cccccc]">Bloom | {updateSettings.data.steps.brewing.bloom}</span>
+                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                        <span className="text-[#cccccc]">First Pour | {updateSettings.data.steps.brewing.firstPour}</span>
+                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                        <span className="text-[#cccccc]">Second Pour | {updateSettings.data.steps.brewing.secondPour}</span>
+                      </>
+                    )}
                   </div>
                 }
               />
-              <DetailRow label="Dripping" value="30s" />
-              <DetailRow label="Final Brew" value="240ml / 180s" />
+              <DetailRow 
+                label="Dripping" 
+                value={updateSettings.data?.steps?.dripping} 
+              />
+              <DetailRow 
+                label="Final Brew" 
+                value={updateSettings.data?.steps?.finalBrew} 
+              />
             </Card>
           </>
         )}
