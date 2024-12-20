@@ -277,8 +277,19 @@ export default function BrewingPage() {
                 water_ratio: settings.settings.water_ratio,
               }}
               onSubmit={async (scores) => {
-                await updateTasting.mutateAsync(scores);
-                setCurrentStep(4);
+                try {
+                  await updateTasting.mutateAsync(scores);
+                  toast("Tasting notes saved successfully", {
+                    duration: 4000,
+                    className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
+                  });
+                  setCurrentStep(4);
+                } catch (error) {
+                  toast.error("Failed to save tasting notes", {
+                    duration: 4000,
+                    className: "bg-[#1e1e1e] border-[#333333] text-red-500",
+                  });
+                }
               }}
             />
           </>
