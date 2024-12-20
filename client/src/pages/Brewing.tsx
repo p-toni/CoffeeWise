@@ -197,14 +197,8 @@ export default function BrewingPage() {
                 status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">200</span>}
               />
 
-              <DetailRow 
-                label="Rinse" 
-                value={updateSteps.data?.steps?.rinse?.join(" /")} 
-              />
-              <DetailRow 
-                label="Add Coffee" 
-                value={updateSteps.data?.steps?.addCoffee?.join(" /")} 
-              />
+              <DetailRow label="Rinse" value={updateSteps.data?.steps?.rinse?.join(" /Discard the rinse water.")} />
+              <DetailRow label="Add Coffee" value={updateSteps.data?.steps?.addCoffee?.join(" /")} />
               <DetailRow
                 label="Brewing"
                 value={
@@ -221,15 +215,23 @@ export default function BrewingPage() {
                     )}
                   </div>
                 }
+                valueClass=""
               />
-              <DetailRow 
-                label="Dripping" 
-                value={updateSteps.data?.steps?.dripping} 
-              />
-              <DetailRow 
-                label="Final Brew" 
-                value={updateSteps.data?.steps?.finalBrew} 
-              />
+              <DetailRow label="Dripping" value="30s" />
+              <DetailRow label="Final Brew" value={updateSteps.data?.steps?.finalBrew} />
+
+              <div className="mt-2">
+                <div className="text-[#888888] text-sm mb-1">External APIs</div>
+                <div className="flex items-center gap-2">
+                  <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">BEAN</div>
+                  <div className="text-[#cccccc]">brewise.coffee.com/ptoni</div>
+                  <div className="flex items-center gap-1 ml-auto">
+                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                    <span className="text-[#888888] text-[0.7rem]">68ms</span>
+                    <div className="w-6 h-[0.2rem] bg-[#A3E635]/50 rounded-full" />
+                  </div>
+                </div>
+              </div>
             </Card>
           </>
         )}
