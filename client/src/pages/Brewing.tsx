@@ -195,6 +195,7 @@ export default function BrewingPage() {
                         water_temp: prev.brewingMethods[method].water_temp
                       }
                     }));
+                    setMethodSelectorOpen(false);
                   }}
                 />
               </>
