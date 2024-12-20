@@ -120,13 +120,16 @@ export default function BrewingPage() {
       <div className="min-h-screen bg-[#121212] text-[#f0f0f0] p-4 font-mono text-sm">
         <div className="max-w-3xl mx-auto">
           <button 
-            onClick={handleStart}
-            className="w-full text-left hover:bg-[#1e1e1e] rounded transition-colors duration-200 px-2"
+            onClick={() => {
+              toast("Let's Brew!", {
+                duration: 2000,
+                className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
+              });
+              handleStart();
+            }}
+            className="w-full flex items-center justify-center p-8 hover:bg-[#1e1e1e] rounded-lg transition-colors duration-200"
           >
-            <SectionHeader
-              title="Start Brewing"
-              icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />}
-            />
+            <Coffee className="w-12 h-12 text-[#888888] hover:text-[#f0f0f0] transition-colors duration-200" />
           </button>
         </div>
       </div>
