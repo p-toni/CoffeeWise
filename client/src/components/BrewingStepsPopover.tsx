@@ -31,7 +31,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate, queryClient }: Pr
     setLocalSteps(steps);
   }, [steps]);
 
-  const handleValueChange = async (
+  const handleValueChange = (
     index: number,
     field: keyof BrewingStepSettings,
     value: string,
@@ -44,7 +44,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate, queryClient }: Pr
       newSteps[index] = { ...newSteps[index], [field]: value };
     }
     setLocalSteps(newSteps);
-    await onUpdate(index, field, newSteps[index][field]);
+    onUpdate(index, field, newSteps[index][field]);
   };
 
   return (
