@@ -20,27 +20,19 @@ interface BrewingStepSettings {
 interface Props {
   method: string;
   steps: BrewingStepSettings[];
-  onUpdate: (newSteps: BrewingStepSettings[]) => void;
+  onUpdate: (index: number, field: keyof BrewingStepSettings, value: string) => void;
 }
 
 export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   const [open, setOpen] = React.useState(false);
-  const [localSteps, setLocalSteps] = React.useState(steps);
-
-  React.useEffect(() => {
-    setLocalSteps(steps);
-  }, [steps]);
 
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
-    const newSteps = [...localSteps];
     if (field === 'amount') {
       const numericValue = value.replace(/\D/g, '');
-      newSteps[index] = { ...newSteps[index], [field]: `${numericValue}ml` };
+      onUpdate(index, field, `${numericValue}ml`);
     } else {
-      newSteps[index] = { ...newSteps[index], [field]: value };
+      onUpdate(index, field, value);
     }
-    setLocalSteps(newSteps);
-    onUpdate(newSteps);
   };
 
   return (

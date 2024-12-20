@@ -230,8 +230,10 @@ export default function BrewingPage() {
                             <BrewingStepsPopover
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (newSteps) => {
-                                const result = await updateSteps.mutateAsync({
+                              onUpdate={async (index, field, value) => {
+                                const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                newSteps[index] = { ...newSteps[index], [field]: value };
+                                await updateSteps.mutateAsync({
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
@@ -266,8 +268,10 @@ export default function BrewingPage() {
                             <BrewingStepsPopover
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (newSteps) => {
-                                const result = await updateSteps.mutateAsync({
+                              onUpdate={async (index, field, value) => {
+                                const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                newSteps[index] = { ...newSteps[index], [field]: value };
+                                await updateSteps.mutateAsync({
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
