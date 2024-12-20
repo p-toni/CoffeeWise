@@ -72,12 +72,16 @@ export default function BrewingPage() {
   if (currentStep === 0) {
     return (
       <div className="min-h-screen bg-[#121212] text-[#f0f0f0] p-4 font-mono text-sm">
-        <div className="max-w-3xl mx-auto space-y-2.5">
-          <SectionHeader
-            title="Start Brewing"
-            icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />}
-          />
-          <Button onClick={handleStart} variant="outline" className="text-xs">Start Brewing</Button>
+        <div className="max-w-3xl mx-auto">
+          <button 
+            onClick={handleStart}
+            className="w-full text-left hover:bg-[#1e1e1e] rounded transition-colors duration-200 px-2"
+          >
+            <SectionHeader
+              title="Start Brewing"
+              icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />}
+            />
+          </button>
         </div>
       </div>
     );
