@@ -64,11 +64,45 @@ export default function BrewingPage() {
     }
   });
 
+  const handleUpdateSteps = async (newSteps: any, type: 'brewing' | 'shot' = 'brewing') => {
+    try {
+      if (type === 'brewing') {
+        await updateSteps.mutateAsync({
+          ...updateSteps.data,
+          steps: {
+            ...updateSteps.data?.steps,
+            brewing: newSteps
+          }
+        });
+      } else {
+        await updateSteps.mutateAsync({
+          ...updateSteps.data,
+          steps: {
+            ...updateSteps.data?.steps,
+            shot: `${newSteps[0].amount} / ${newSteps[0].time}`
+          }
+        });
+      }
+      
+      // Invalidate queries to refresh the UI
+      await queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
+      toast.success("Steps updated successfully");
+    } catch (error) {
+      console.error('Failed to update steps:', error);
+      toast.error("Failed to update steps");
+    }
+  };
+
   const handleStart = async () => {
-    const result = await startBrewing.mutateAsync();
-    setBrewingId(result.brewingId);
-    setStartTime(new Date().toLocaleString());
-    setCurrentStep(1);
+    try {
+      const result = await startBrewing.mutateAsync();
+      setBrewingId(result.brewingId);
+      setStartTime(new Date().toLocaleString());
+      setCurrentStep(1);
+    } catch (error) {
+      console.error('Failed to start brewing:', error);
+      toast.error("Failed to start brewing");
+    }
   };
 
   if (currentStep === 0) {
@@ -114,9 +148,15 @@ export default function BrewingPage() {
                 isOpen={isBeanSelectorOpen}
                 onClose={() => setIsBeanSelectorOpen(false)}
                 onSelect={async (path) => {
-                  setSettings(prev => ({ ...prev, bean: path }));
-                  await updateSettings.mutateAsync({ ...settings, bean: path });
-                  await updateSteps.mutateAsync();
+                  try {
+                    setSettings(prev => ({ ...prev, bean: path }));
+                    await updateSettings.mutateAsync({ ...settings, bean: path });
+                    await updateSteps.mutateAsync();
+                    await queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/settings`] });
+                  } catch (error) {
+                    console.error('Failed to update bean:', error);
+                    toast.error("Failed to update bean");
+                  }
                 }}
               />
             </>
@@ -158,9 +198,16 @@ export default function BrewingPage() {
           <div className="mt-3 flex justify-end">
             <Button 
               onClick={async () => {
-                await updateSettings.mutateAsync(settings);
-                await updateSteps.mutateAsync();
-                setCurrentStep(2);
+                try {
+                  await updateSettings.mutateAsync(settings);
+                  await updateSteps.mutateAsync();
+                  await queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/settings`] });
+                  setCurrentStep(2);
+                  toast.success("Settings updated successfully");
+                } catch (error) {
+                  console.error('Failed to update settings:', error);
+                  toast.error("Failed to update settings");
+                }
               }}
               variant="outline"
               className="text-xs"
@@ -230,15 +277,7 @@ export default function BrewingPage() {
                             <BrewingStepsModal
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (newSteps) => {
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: {
-                                    ...updateSteps.data?.steps,
-                                    brewing: newSteps
-                                  }
-                                });
-                              }}
+                              onUpdate={async (newSteps) => handleUpdateSteps(newSteps, 'brewing')}
                             />
                           </div>
                         }
@@ -258,7 +297,7 @@ export default function BrewingPage() {
                             <div className="flex items-center gap-1">
                               {updateSteps.data?.steps?.brewing?.map((step: any, index: number) => (
                                 <React.Fragment key={`${step.step}-${index}`}>
-                                  <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                  <div className="w-1.5 h-1.5 rounded-full bg-[#A3E635]" />
                                   <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
                                 </React.Fragment>
                               ))}
@@ -266,15 +305,7 @@ export default function BrewingPage() {
                             <BrewingStepsModal
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={async (newSteps) => {
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: {
-                                    ...updateSteps.data?.steps,
-                                    brewing: newSteps
-                                  }
-                                });
-                              }}
+                              onUpdate={async (newSteps) => handleUpdateSteps(newSteps, 'brewing')}
                             />
                           </div>
                         }
@@ -301,15 +332,7 @@ export default function BrewingPage() {
                                 amount: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[0] : '0ml', 
                                 time: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[1] : '0s' 
                               }]}
-                              onUpdate={async (newSteps) => {
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: {
-                                    ...updateSteps.data?.steps,
-                                    shot: `${newSteps[0].amount} / ${newSteps[0].time}`
-                                  }
-                                });
-                              }}
+                              onUpdate={async (newSteps) => handleUpdateSteps(newSteps, 'shot')}
                             />
                           </div>
                         } 
@@ -355,7 +378,7 @@ export default function BrewingPage() {
               onSubmit={async (scores) => {
                 try {
                   await updateTasting.mutateAsync(scores);
-                  toast("Tasting notes saved successfully", {
+                  toast.success("Tasting notes saved successfully", {
                     duration: 4000,
                     className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
                   });
