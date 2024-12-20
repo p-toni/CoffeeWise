@@ -76,12 +76,26 @@ export default function BrewingPage() {
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
     method: "V60",
-    settings: {
-      coffee: 18,
-      water_ratio: 16,
-      grind_size: "medium",
-      water_temp: 92,
-    },
+    brewingMethods: {
+      V60: {
+        coffee: 18,
+        water_ratio: 16,
+        grind_size: "medium",
+        water_temp: 92,
+      },
+      Espresso: {
+        coffee: 18,
+        water_ratio: 2,
+        grind_size: "fine",
+        water_temp: 92,
+      },
+      "French Press": {
+        coffee: 30,
+        water_ratio: 15,
+        grind_size: "coarse",
+        water_temp: 95,
+      }
+    }
   });
 
   const handleStart = async () => {
@@ -165,7 +179,11 @@ export default function BrewingPage() {
                   isOpen={isMethodSelectorOpen}
                   onClose={() => setMethodSelectorOpen(false)}
                   onSelect={(method) => {
-                    setSettings((prev) => ({ ...prev, method }));
+                    setSettings((prev) => ({ 
+                      ...prev, 
+                      method,
+                      settings: prev.brewingMethods[method]
+                    }));
                   }}
                 />
               </>
@@ -292,8 +310,7 @@ export default function BrewingPage() {
                                   await updateSettings.mutateAsync(settings);
                                   // Then update the specific step value
                                   const newSteps = [
-                                    ...(updateSteps.data?.steps?.brewing ||
-                                      []),
+                                    ...(updateSteps.data?.steps?.brewing || []),
                                   ];
                                   newSteps[index] = {
                                     ...newSteps[index],
@@ -364,8 +381,7 @@ export default function BrewingPage() {
                                   await updateSettings.mutateAsync(settings);
                                   // Then update the specific step value
                                   const newSteps = [
-                                    ...(updateSteps.data?.steps?.brewing ||
-                                      []),
+                                    ...(updateSteps.data?.steps?.brewing || []),
                                   ];
                                   newSteps[index] = {
                                     ...newSteps[index],
@@ -415,42 +431,42 @@ export default function BrewingPage() {
                           <div className="flex items-center justify-end gap-2">
                             <span>{updateSteps.data.steps.shot}</span>
                             <button
-                                onClick={() => setBrewingStepsOpen(true)}
-                                className="text-[#cccccc] hover:text-white focus:outline-none"
-                              >
-                                <Settings2 className="h-4 w-4" />
-                              </button>
-                              <BrewingSteps
-                                isOpen={isBrewingStepsOpen}
-                                onClose={() => setBrewingStepsOpen(false)}
-                                method={settings.method}
-                                steps={[
-                                  {
-                                    step: "Shot",
-                                    amount: updateSteps.data?.steps?.shot
-                                      ? updateSteps.data.steps.shot.split(
-                                          " / ",
-                                        )[0]
-                                      : "0ml",
-                                    time: updateSteps.data?.steps?.shot
-                                      ? updateSteps.data.steps.shot.split(
-                                          " / ",
-                                        )[1]
-                                      : "0s",
-                                  },
-                                ]}
-                                onUpdate={async (index, field, value) => {
-                                  await updateSettings.mutateAsync(settings);
-                                  const newSteps = {
-                                    ...updateSteps.data?.steps,
-                                    shot: `${field === "amount" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[0] || "0ml"} / ${field === "time" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[1] || "0s"}`,
-                                  };
-                                  await updateSteps.mutateAsync({
-                                    ...updateSteps.data,
-                                    steps: newSteps,
-                                  });
-                                }}
-                              />
+                              onClick={() => setBrewingStepsOpen(true)}
+                              className="text-[#cccccc] hover:text-white focus:outline-none"
+                            >
+                              <Settings2 className="h-4 w-4" />
+                            </button>
+                            <BrewingSteps
+                              isOpen={isBrewingStepsOpen}
+                              onClose={() => setBrewingStepsOpen(false)}
+                              method={settings.method}
+                              steps={[
+                                {
+                                  step: "Shot",
+                                  amount: updateSteps.data?.steps?.shot
+                                    ? updateSteps.data.steps.shot.split(
+                                        " / ",
+                                      )[0]
+                                    : "0ml",
+                                  time: updateSteps.data?.steps?.shot
+                                    ? updateSteps.data.steps.shot.split(
+                                        " / ",
+                                      )[1]
+                                    : "0s",
+                                },
+                              ]}
+                              onUpdate={async (index, field, value) => {
+                                await updateSettings.mutateAsync(settings);
+                                const newSteps = {
+                                  ...updateSteps.data?.steps,
+                                  shot: `${field === "amount" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[0] || "0ml"} / ${field === "time" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[1] || "0s"}`,
+                                };
+                                await updateSteps.mutateAsync({
+                                  ...updateSteps.data,
+                                  steps: newSteps,
+                                });
+                              }}
+                            />
                           </div>
                         }
                       />
