@@ -25,14 +25,22 @@ interface Props {
 
 export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
   const [open, setOpen] = React.useState(false);
+  const [localSteps, setLocalSteps] = React.useState(steps);
+
+  React.useEffect(() => {
+    setLocalSteps(steps);
+  }, [steps]);
 
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
+    const newSteps = [...localSteps];
     if (field === 'amount') {
       const numericValue = value.replace(/\D/g, '');
-      onUpdate(index, field, `${numericValue}ml`);
+      newSteps[index] = { ...newSteps[index], [field]: `${numericValue}ml` };
     } else {
-      onUpdate(index, field, value);
+      newSteps[index] = { ...newSteps[index], [field]: value };
     }
+    setLocalSteps(newSteps);
+    onUpdate(index, field, newSteps[index][field]);
   };
 
   return (
@@ -43,7 +51,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
       <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#cccccc]">
         <div className="grid gap-4">
           <div className="space-y-2">
-            {steps.map((step, index) => (
+            {localSteps.map((step, index) => (
               <div key={`${step.step}-${index}`} className="grid gap-2">
                 <Label htmlFor={`step-${index}`}>{step.step}</Label>
                 <div className="grid grid-cols-2 gap-2">
