@@ -19,7 +19,7 @@ interface BrewingStepSettings {
 interface Props {
   method: string;
   steps: BrewingStepSettings[];
-  onUpdate: (updatedSteps: BrewingStepSettings[]) => void;
+  onUpdate: (index: number, field: keyof BrewingStepSettings, value: string) => void;
   queryClient?: any;
 }
 
@@ -31,7 +31,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate, queryClient }: Pr
     setLocalSteps(steps);
   }, [steps]);
 
-  const handleValueChange = (
+  const handleValueChange = async (
     index: number,
     field: keyof BrewingStepSettings,
     value: string,
@@ -44,7 +44,7 @@ export function BrewingStepsPopover({ method, steps, onUpdate, queryClient }: Pr
       newSteps[index] = { ...newSteps[index], [field]: value };
     }
     setLocalSteps(newSteps);
-    onUpdate(newSteps);
+    await onUpdate(index, field, newSteps[index][field]);
   };
 
   return (

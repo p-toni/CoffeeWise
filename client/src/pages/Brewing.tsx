@@ -232,11 +232,19 @@ export default function BrewingPage() {
                               queryClient={queryClient}
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={(index, field, value) => {
+                              onUpdate={async (index, field, value) => {
                                 const newSteps = [...updateSteps.data?.steps?.brewing || []];
                                 newSteps[index] = { ...newSteps[index], [field]: value };
                                 // Update local state first
-                                queryClient.setQueryData(['brewing', 'steps'], {
+                                await queryClient.setQueryData(['brewing', 'steps'], {
+                                  ...updateSteps.data,
+                                  steps: {
+                                    ...updateSteps.data?.steps,
+                                    brewing: newSteps
+                                  }
+                                });
+                                // Trigger mutation to update server
+                                await updateSteps.mutateAsync({
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
@@ -278,11 +286,19 @@ export default function BrewingPage() {
                               queryClient={queryClient}
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
-                              onUpdate={(index, field, value) => {
+                              onUpdate={async (index, field, value) => {
                                 const newSteps = [...updateSteps.data?.steps?.brewing || []];
                                 newSteps[index] = { ...newSteps[index], [field]: value };
                                 // Update local state first
-                                queryClient.setQueryData(['brewing', 'steps'], {
+                                await queryClient.setQueryData(['brewing', 'steps'], {
+                                  ...updateSteps.data,
+                                  steps: {
+                                    ...updateSteps.data?.steps,
+                                    brewing: newSteps
+                                  }
+                                });
+                                // Trigger mutation to update server
+                                await updateSteps.mutateAsync({
                                   ...updateSteps.data,
                                   steps: {
                                     ...updateSteps.data?.steps,
