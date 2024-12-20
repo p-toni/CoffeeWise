@@ -1,0 +1,23 @@
+[vite] connecting...
+[vite] connected.
+Warning: Each child in a list should have a unique &quot;key&quot; prop.
+
+Check the render method of `BrewingPage`. See https://reactjs.org/link/warning-keys for more information.
+    at BrewingPage (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/src/pages/Brewing.tsx:71:68)
+    at Route (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/wouter.js?v=8d686a06:323:16)
+    at Switch (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/wouter.js?v=8d686a06:379:17)
+    at App
+    at BrewingProvider (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/src/context/BrewingContext.tsx:20:35)
+    at QueryClientProvider (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/@tanstack_react-query.js?v=8d686a06:2805:3)
+
+Check the render method of &#x60;BrewingPage&#x60;. See https://reactjs.org/link/warning-keys for more information.
+at BrewingPage (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/src/pages/Brewing.tsx:71:68)
+at Route (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/wouter.js?v=8d686a06:323:16)
+at Switch (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/wouter.js?v=8d686a06:379:17)
+at App
+at BrewingProvider (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/src/context/BrewingContext.tsx:20:35)
+at QueryClientProvider (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/@fs/home/runner/BrewMaster/node_modules/.vite/deps/@tanstack_react-query.js?v=8d686a06:2805:3)
+at t.value (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://e8ddb50d-9b23-41df-ae0b-0e69a283738b-00-1qi74wa328ofp.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
