@@ -1,6 +1,8 @@
 'use client'
 
-import { Shield, Box, Zap } from 'lucide-react'
+import { Shield, Box, Zap, Settings2 } from 'lucide-react'
+import { toast } from "sonner"
+import { SettingsPopover } from "@/components/SettingsPopover"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useBrewing } from "@/context/BrewingContext"
@@ -126,8 +128,20 @@ export default function BrewingPage() {
           } />
           <DetailRow 
             label="Settings" 
-            value={`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`} 
-            valueClass="truncate text-[#cccccc]" 
+            value={
+              <div className="flex items-center gap-4">
+                <span className="truncate text-[#cccccc]">
+                  {`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`}
+                </span>
+                <SettingsPopover
+                  settings={settings.settings}
+                  onUpdate={(newSettings) => {
+                    setSettings(prev => ({ ...prev, settings: newSettings }));
+                  }}
+                />
+              </div>
+            }
+            valueClass="truncate text-[#cccccc]"
           />
           <div className="mt-3 flex justify-end">
             <Button 
@@ -154,7 +168,10 @@ export default function BrewingPage() {
                 <button
                   onClick={() => {
                     if (updateSettings.data?.recommendation?.message) {
-                      alert(updateSettings.data.recommendation.message);
+                      toast(updateSettings.data.recommendation.message, {
+                        duration: 4000,
+                        className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
+                      });
                     }
                   }}
                   className={`bg-[#333333] px-1 rounded ${
