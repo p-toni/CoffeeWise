@@ -54,10 +54,10 @@ export function BrewingSteps({ isOpen, onClose, method, steps, onUpdate }: Props
   const [localSteps, setLocalSteps] = React.useState(steps);
 
   React.useEffect(() => {
-    if (steps && steps.length > 0) {
+    if (!localSteps.length && steps.length > 0) {
       setLocalSteps(steps);
     }
-  }, [steps]);
+  }, []); // Empty dependency array
 
   const handleValueChange = (
     index: number,
