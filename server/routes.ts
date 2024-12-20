@@ -124,17 +124,6 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-Bean Profile: ${
-  bean.includes('ethiopian') ? 'Ethiopian (bright, floral)' :
-  bean.includes('colombian') ? 'Colombian (medium body, sweet)' :
-  bean.includes('brazilian') ? 'Brazilian (nutty, low acid)' : 'Unknown'
-}
-Method Requirements: ${
-  method === 'V60' ? 'V60 (medium-fine grind, precise pour)' :
-  method === 'French Press' ? 'French Press (coarse grind, immersion)' :
-  method === 'Espresso' ? 'Espresso (fine grind, high pressure)' : 'Unknown'
-}
-
 Analyze the compatibility of these parameters and respond with a clear recommendation about whether these settings are optimal for the chosen method and bean. Consider extraction, temperature impact, and grind size appropriateness.`;
 
     const result = await recommendationModel.generateContent(prompt);
