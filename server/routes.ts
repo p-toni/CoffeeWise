@@ -171,9 +171,9 @@ Respond with a clear recommendation focusing on whether these settings are optim
           return {
             addCoffee: 'Add coffee to the French Press',
             brewing: [
-              { step: 'Add Water', amount: `${waterAmount}ml`, time: '0s' },
-              { step: 'Stir', amount: 'N/A', time: '10s' },
-              { step: 'Steep', amount: 'N/A', time: '4min' }
+              { step: 'Add Water', amount: `${waterAmount}ml`, time: '20s' },
+              { step: 'Stir', amount: '5 times', time: '10s' },
+              { step: 'Steep', amount: 'Wait', time: '4min' }
             ],
             plunge: '30s',
             finalBrew: `${waterAmount}ml / 270s`
