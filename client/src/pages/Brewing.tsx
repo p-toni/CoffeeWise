@@ -179,10 +179,15 @@ export default function BrewingPage() {
                   isOpen={isMethodSelectorOpen}
                   onClose={() => setMethodSelectorOpen(false)}
                   onSelect={(method) => {
-                    setSettings((prev) => ({ 
-                      ...prev, 
+                    setSettings((prev) => ({
+                      ...prev,
                       method,
-                      settings: prev.brewingMethods[method]
+                      settings: {
+                        coffee: prev.brewingMethods[method].coffee,
+                        water_ratio: prev.brewingMethods[method].water_ratio,
+                        grind_size: prev.brewingMethods[method].grind_size,
+                        water_temp: prev.brewingMethods[method].water_temp
+                      }
                     }));
                   }}
                 />
