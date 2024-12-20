@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useBrewing } from "@/context/BrewingContext"
 import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } from "@/lib/brewing"
 import { useState } from "react"
+import { MethodSelector } from "@/components/MethodSelector"
 import { BeanSelector } from "@/components/BeanSelector"
 
 interface SectionHeaderProps {
@@ -41,6 +42,7 @@ export default function BrewingPage() {
   const startBrewing = useStartBrewing();
   const updateSettings = useUpdateSettings(brewingId || "");
   const updateSteps = useUpdateSteps(brewingId || "");
+  const [isMethodSelectorOpen, setMethodSelectorOpen] = useState(false);
   const updateTasting = useUpdateTasting(brewingId || "");
   const [isBeanSelectorOpen, setIsBeanSelectorOpen] = useState(false);
 
@@ -101,7 +103,23 @@ export default function BrewingPage() {
               />
             </>
           } />
-          <DetailRow label="Method" value={settings.method} />
+          <DetailRow label="Method" value={
+            <>
+              <button 
+                onClick={() => setMethodSelectorOpen(true)}
+                className="text-[#cccccc] hover:text-white focus:outline-none"
+              >
+                {settings.method}
+              </button>
+              <MethodSelector
+                isOpen={isMethodSelectorOpen}
+                onClose={() => setMethodSelectorOpen(false)}
+                onSelect={(method) => {
+                  setSettings(prev => ({ ...prev, method }));
+                }}
+              />
+            </>
+          } />
           <DetailRow 
             label="Settings" 
             value={`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`} 
