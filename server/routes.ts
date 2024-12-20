@@ -124,15 +124,16 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-Bean Characteristics:
-${bean.includes('ethiopian') ? '- Ethiopian beans are known for bright acidity and floral notes' : ''}
-${bean.includes('colombian') ? '- Colombian beans typically have medium body and caramel sweetness' : ''}
-${bean.includes('brazilian') ? '- Brazilian beans often have nutty, chocolate notes with low acidity' : ''}
-
-Method Considerations:
-${method === 'V60' ? '- V60 requires precise pouring and medium-fine grind' : ''}
-${method === 'French Press' ? '- French Press needs coarse grind and full immersion' : ''}
-${method === 'Espresso' ? '- Espresso requires fine grind and high pressure' : ''}
+Bean Profile: ${
+  bean.includes('ethiopian') ? 'Ethiopian (bright, floral)' :
+  bean.includes('colombian') ? 'Colombian (medium body, sweet)' :
+  bean.includes('brazilian') ? 'Brazilian (nutty, low acid)' : 'Unknown'
+}
+Method Requirements: ${
+  method === 'V60' ? 'V60 (medium-fine grind, precise pour)' :
+  method === 'French Press' ? 'French Press (coarse grind, immersion)' :
+  method === 'Espresso' ? 'Espresso (fine grind, high pressure)' : 'Unknown'
+}
 
 Analyze the compatibility of these parameters and respond with a clear recommendation about whether these settings are optimal for the chosen method and bean. Consider extraction, temperature impact, and grind size appropriateness.`;
 
