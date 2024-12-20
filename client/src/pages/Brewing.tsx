@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Shield, Zap, Settings2 } from 'lucide-react'
+import { Shield, Zap, Settings2, Coffee } from 'lucide-react'
 import { TastingForm } from "@/components/TastingForm"
 import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
@@ -350,17 +350,17 @@ export default function BrewingPage() {
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>
-                <button 
-                  onClick={() => setCurrentStep(3)}
-                  className="w-full flex items-center gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
+                <button
+                  onClick={() => {
+                    toast("Let's Brew!", {
+                      duration: 2000,
+                      className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
+                    });
+                    setCurrentStep(3);
+                  }}
+                  className="w-full flex items-center justify-end gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
                 >
-                  <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">BEAN</div>
-                  <div className="text-[#cccccc]">brewise.coffee.com/ptoni</div>
-                  <div className="flex items-center gap-1 ml-auto">
-                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                    <span className="text-[#888888] text-[0.7rem]">68ms</span>
-                    <div className="w-6 h-[0.2rem] bg-[#A3E635]/50 rounded-full" />
-                  </div>
+                  <Coffee className="w-8 h-8 text-[#888888] hover:text-[#A3E635] transition-colors duration-200" />
                 </button>
               </div>
             </Card>
