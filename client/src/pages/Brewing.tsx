@@ -18,6 +18,7 @@ import { useState } from "react";
 import { MethodSelector } from "@/components/MethodSelector";
 import { BeanSelector } from "@/components/BeanSelector";
 import { BrewingStepsPopover } from "@/components/BrewingStepsPopover";
+import { BrewingSteps } from "@/components/BrewingSteps"; // Import the new component
 import { queryClient } from "@/lib/queryClient";
 
 interface SectionHeaderProps {
@@ -71,6 +72,7 @@ export default function BrewingPage() {
   const [isBeanSelectorOpen, setIsBeanSelectorOpen] = useState(false);
   const [isSettingsSelectorOpen, setSettingsSelectorOpen] = useState(false);
   const [startTime, setStartTime] = useState<string>("");
+  const [isBrewingStepsOpen, setBrewingStepsOpen] = useState(false); // Add state for the drawer
 
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
@@ -281,40 +283,38 @@ export default function BrewingPage() {
                                   ),
                                 )}
                               </div>
-                              {settings.method === "V60" && (
-                                <BrewingStepsPopover
-                                  method={settings.method}
-                                  steps={updateSteps.data?.steps?.brewing || []}
-                                  onUpdate={async (index, field, value) => {
-                                    // First update settings to trigger step recalculation
-                                    await updateSettings.mutateAsync(settings);
-                                    // Then update the specific step value
-                                    const newSteps = [
-                                      ...(updateSteps.data?.steps?.brewing ||
-                                        []),
-                                    ];
-                                    newSteps[index] = {
-                                      ...newSteps[index],
-                                      [field]: value,
-                                    };
-                                    await updateSteps.mutateAsync({
-                                      ...updateSteps.data,
-                                      steps: {
-                                        ...updateSteps.data?.steps,
-                                        brewing: newSteps,
-                                      },
-                                    });
-                                  }}
-                                  onClose={async () => {
-                                    // Save changes when popover closes
-                                    if (updateSteps.data) {
-                                      await updateSteps.mutateAsync(
-                                        updateSteps.data,
-                                      );
-                                    }
-                                  }}
-                                />
-                              )}
+                              <BrewingStepsPopover
+                                method={settings.method}
+                                steps={updateSteps.data?.steps?.brewing || []}
+                                onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
+                                  const newSteps = [
+                                    ...(updateSteps.data?.steps?.brewing ||
+                                      []),
+                                  ];
+                                  newSteps[index] = {
+                                    ...newSteps[index],
+                                    [field]: value,
+                                  };
+                                  await updateSteps.mutateAsync({
+                                    ...updateSteps.data,
+                                    steps: {
+                                      ...updateSteps.data?.steps,
+                                      brewing: newSteps,
+                                    },
+                                  });
+                                }}
+                                onClose={async () => {
+                                  // Save changes when popover closes
+                                  if (updateSteps.data) {
+                                    await updateSteps.mutateAsync(
+                                      updateSteps.data,
+                                    );
+                                  }
+                                }}
+                              />
                             </>
                           </div>
                         }
@@ -355,40 +355,38 @@ export default function BrewingPage() {
                                   ),
                                 )}
                               </div>
-                              {settings.method === "V60" && (
-                                <BrewingStepsPopover
-                                  method={settings.method}
-                                  steps={updateSteps.data?.steps?.brewing || []}
-                                  onUpdate={async (index, field, value) => {
-                                    // First update settings to trigger step recalculation
-                                    await updateSettings.mutateAsync(settings);
-                                    // Then update the specific step value
-                                    const newSteps = [
-                                      ...(updateSteps.data?.steps?.brewing ||
-                                        []),
-                                    ];
-                                    newSteps[index] = {
-                                      ...newSteps[index],
-                                      [field]: value,
-                                    };
-                                    await updateSteps.mutateAsync({
-                                      ...updateSteps.data,
-                                      steps: {
-                                        ...updateSteps.data?.steps,
-                                        brewing: newSteps,
-                                      },
-                                    });
-                                  }}
-                                  onClose={async () => {
-                                    // Save changes when popover closes
-                                    if (updateSteps.data) {
-                                      await updateSteps.mutateAsync(
-                                        updateSteps.data,
-                                      );
-                                    }
-                                  }}
-                                />
-                              )}
+                              <button
+                                onClick={() => setBrewingStepsOpen(true)}
+                                className="text-[#cccccc] hover:text-white focus:outline-none"
+                              >
+                                <Settings2 className="h-4 w-4" />
+                              </button>
+                              <BrewingSteps
+                                isOpen={isBrewingStepsOpen}
+                                onClose={() => setBrewingStepsOpen(false)}
+                                method={settings.method}
+                                steps={updateSteps.data?.steps?.brewing || []}
+                                onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
+                                  const newSteps = [
+                                    ...(updateSteps.data?.steps?.brewing ||
+                                      []),
+                                  ];
+                                  newSteps[index] = {
+                                    ...newSteps[index],
+                                    [field]: value,
+                                  };
+                                  await updateSteps.mutateAsync({
+                                    ...updateSteps.data,
+                                    steps: {
+                                      ...updateSteps.data?.steps,
+                                      brewing: newSteps,
+                                    },
+                                  });
+                                }}
+                              />
                             </>
                           </div>
                         }
