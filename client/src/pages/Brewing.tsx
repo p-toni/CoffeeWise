@@ -13,6 +13,7 @@ import { useState } from "react"
 import { MethodSelector } from "@/components/MethodSelector"
 import { BeanSelector } from "@/components/BeanSelector"
 import { BrewingStepsPopover } from "@/components/BrewingStepsPopover"
+import { queryClient } from "@/lib/queryClient"
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -228,6 +229,7 @@ export default function BrewingPage() {
                               ))}
                             </div>
                             <BrewingStepsPopover
+                              queryClient={queryClient}
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
                               onUpdate={(index, field, value) => {
@@ -273,6 +275,7 @@ export default function BrewingPage() {
                               ))}
                             </div>
                             <BrewingStepsPopover
+                              queryClient={queryClient}
                               method={settings.method}
                               steps={updateSteps.data?.steps?.brewing || []}
                               onUpdate={(index, field, value) => {
