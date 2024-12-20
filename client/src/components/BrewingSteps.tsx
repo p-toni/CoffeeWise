@@ -51,13 +51,15 @@ const StepInput = ({
 );
 
 export function BrewingSteps({ isOpen, onClose, method, steps, onUpdate }: Props) {
-  const [localSteps, setLocalSteps] = React.useState(steps);
+  const [localSteps, setLocalSteps] = React.useState<BrewingStep[]>([]);
+  const stepsRef = React.useRef(steps);
 
   React.useEffect(() => {
-    if (!localSteps.length && steps.length > 0) {
+    if (stepsRef.current !== steps) {
       setLocalSteps(steps);
+      stepsRef.current = steps;
     }
-  }, []); // Empty dependency array
+  }, [steps]);
 
   const handleValueChange = (
     index: number,

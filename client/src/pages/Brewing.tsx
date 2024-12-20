@@ -190,7 +190,6 @@ export default function BrewingPage() {
                         water_temp: prev.brewingMethods[method].water_temp
                       }
                     }));
-                    queryClient.invalidateQueries(['steps', brewingId]);
                     setMethodSelectorOpen(false);
                   }}
                 />
