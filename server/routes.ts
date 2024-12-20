@@ -115,12 +115,26 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
-    const prompt = `Analyze these coffee brewing settings and provide a concise recommendation:
-Bean: ${bean}
-Method: ${method}
-Settings: ${JSON.stringify(settings)}
+    const prompt = `Analyze these coffee brewing settings and provide a concise recommendation.
+Context:
+- Bean Path: ${bean}
+- Brewing Method: ${method}
+- Coffee Amount: ${settings.coffee}g
+- Water Ratio: 1:${settings.water_ratio}
+- Water Temperature: ${settings.water_temp}°C
+- Grind Size: ${settings.grind_size}
 
-Respond with a clear recommendation focusing on whether these settings are optimal for the chosen method and bean.`;
+Bean Characteristics:
+${bean.includes('ethiopian') ? '- Ethiopian beans are known for bright acidity and floral notes' : ''}
+${bean.includes('colombian') ? '- Colombian beans typically have medium body and caramel sweetness' : ''}
+${bean.includes('brazilian') ? '- Brazilian beans often have nutty, chocolate notes with low acidity' : ''}
+
+Method Considerations:
+${method === 'V60' ? '- V60 requires precise pouring and medium-fine grind' : ''}
+${method === 'French Press' ? '- French Press needs coarse grind and full immersion' : ''}
+${method === 'Espresso' ? '- Espresso requires fine grind and high pressure' : ''}
+
+Analyze the compatibility of these parameters and respond with a clear recommendation about whether these settings are optimal for the chosen method and bean. Consider extraction, temperature impact, and grind size appropriateness.`;
 
     const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
