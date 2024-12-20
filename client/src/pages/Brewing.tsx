@@ -327,7 +327,11 @@ export default function BrewingPage() {
                             <span>{updateSteps.data.steps.shot}</span>
                             <BrewingStepsPopover
                               method={settings.method}
-                              steps={[{ step: 'Shot', amount: updateSteps.data.steps.shot.split(' / ')[0], time: updateSteps.data.steps.shot.split(' / ')[1] }]}
+                              steps={[{ 
+                                step: 'Shot', 
+                                amount: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[0] : '0ml', 
+                                time: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[1] : '0s' 
+                              }]}
                               onUpdate={async (index, field, value) => {
                                 await updateSettings.mutateAsync(settings);
                                 const newSteps = {
