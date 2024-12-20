@@ -1,19 +1,24 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { Shield, Zap, Settings2 } from 'lucide-react'
-import { TastingForm } from "@/components/TastingForm"
-import { toast } from "sonner"
-import { SettingsPopover } from "@/components/SettingsPopover"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { useBrewing } from "@/context/BrewingContext"
-import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } from "@/lib/brewing"
-import { useState } from "react"
-import { MethodSelector } from "@/components/MethodSelector"
-import { BeanSelector } from "@/components/BeanSelector"
-import { BrewingStepsPopover } from "@/components/BrewingStepsPopover"
-import { queryClient } from "@/lib/queryClient"
+import * as React from "react";
+import { Shield, Zap, Settings2 } from "lucide-react";
+import { TastingForm } from "@/components/TastingForm";
+import { toast } from "sonner";
+import { SettingsSelector } from "@/components/SettingsSelector";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useBrewing } from "@/context/BrewingContext";
+import {
+  useStartBrewing,
+  useUpdateSettings,
+  useUpdateSteps,
+  useUpdateTasting,
+} from "@/lib/brewing";
+import { useState } from "react";
+import { MethodSelector } from "@/components/MethodSelector";
+import { BeanSelector } from "@/components/BeanSelector";
+import { BrewingStepsPopover } from "@/components/BrewingStepsPopover";
+import { queryClient } from "@/lib/queryClient";
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -22,11 +27,20 @@ interface SectionHeaderProps {
   statusColor?: string;
 }
 
-const SectionHeader = ({ icon, title, status, statusColor = 'text-[#888888]' }: SectionHeaderProps) => (
+const SectionHeader = ({
+  icon,
+  title,
+  status,
+  statusColor = "text-[#888888]",
+}: SectionHeaderProps) => (
   <div className="flex items-center gap-2 text-[#bbbbbb] py-1">
-    {icon && <span className="relative bottom-[1px] text-[0.75rem]">{icon}</span>}
+    {icon && (
+      <span className="relative bottom-[1px] text-[0.75rem]">{icon}</span>
+    )}
     <span className="text-sm font-normal">{title}</span>
-    {status && <span className={`ml-auto text-[0.7rem] ${statusColor}`}>{status}</span>}
+    {status && (
+      <span className={`ml-auto text-[0.7rem] ${statusColor}`}>{status}</span>
+    )}
   </div>
 );
 
@@ -36,7 +50,11 @@ interface DetailRowProps {
   valueClass?: string;
 }
 
-const DetailRow = ({ label, value, valueClass = 'text-[#cccccc]' }: DetailRowProps) => (
+const DetailRow = ({
+  label,
+  value,
+  valueClass = "text-[#cccccc]",
+}: DetailRowProps) => (
   <div className="grid grid-cols-[95px_1fr] gap-y-0.5 py-0.5">
     <div className="text-[#888888] text-sm">{label}</div>
     <div className={`text-sm text-right ${valueClass}`}>{value}</div>
@@ -51,6 +69,7 @@ export default function BrewingPage() {
   const [isMethodSelectorOpen, setMethodSelectorOpen] = useState(false);
   const updateTasting = useUpdateTasting(brewingId || "");
   const [isBeanSelectorOpen, setIsBeanSelectorOpen] = useState(false);
+  const [isSettingsSelectorOpen, setSettingsSelectorOpen] = useState(false);
   const [startTime, setStartTime] = useState<string>("");
 
   const [settings, setSettings] = useState({
@@ -60,8 +79,8 @@ export default function BrewingPage() {
       coffee: 18,
       water_ratio: 16,
       grind_size: "medium",
-      water_temp: 92
-    }
+      water_temp: 92,
+    },
   });
 
   const handleStart = async () => {
@@ -75,13 +94,15 @@ export default function BrewingPage() {
     return (
       <div className="min-h-screen bg-[#121212] text-[#f0f0f0] p-4 font-mono text-sm">
         <div className="max-w-3xl mx-auto">
-          <button 
+          <button
             onClick={handleStart}
             className="w-full text-left hover:bg-[#1e1e1e] rounded transition-colors duration-200 px-2"
           >
             <SectionHeader
               title="Start Brewing"
-              icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />}
+              icon={
+                <div className="w-1.5 h-1.5 rounded-full bg-[#888888] transition-colors duration-300" />
+              }
             />
           </button>
         </div>
@@ -96,59 +117,78 @@ export default function BrewingPage() {
         <SectionHeader
           title="Brewing started"
           status={startTime}
-          icon={<div className="w-1.5 h-1.5 rounded-full bg-[#A3E635] transition-colors duration-300" />}
+          icon={
+            <div className="w-1.5 h-1.5 rounded-full bg-[#A3E635] transition-colors duration-300" />
+          }
         />
 
         {/* Settings Card */}
         <Card className="bg-[#1e1e1e] rounded-md p-3">
           <DetailRow label="Brewing ID" value={brewingId} />
-          <DetailRow label="Bean" value={
-            <>
-              <button 
-                onClick={() => setIsBeanSelectorOpen(true)}
-                className="text-[#cccccc] hover:text-white focus:outline-none"
-              >
-                {settings.bean}
-              </button>
-              <BeanSelector
-                isOpen={isBeanSelectorOpen}
-                onClose={() => setIsBeanSelectorOpen(false)}
-                onSelect={async (path) => {
-                  setSettings(prev => ({ ...prev, bean: path }));
-                  const result = await updateSettings.mutateAsync({ ...settings, bean: path });
-                  await updateSteps.mutateAsync();
-                }}
-              />
-            </>
-          } />
-          <DetailRow label="Method" value={
-            <>
-              <button 
-                onClick={() => setMethodSelectorOpen(true)}
-                className="text-[#cccccc] hover:text-white focus:outline-none"
-              >
-                {settings.method}
-              </button>
-              <MethodSelector
-                isOpen={isMethodSelectorOpen}
-                onClose={() => setMethodSelectorOpen(false)}
-                onSelect={(method) => {
-                  setSettings(prev => ({ ...prev, method }));
-                }}
-              />
-            </>
-          } />
-          <DetailRow 
-            label="Settings" 
+          <DetailRow
+            label="Bean"
+            value={
+              <>
+                <button
+                  onClick={() => setIsBeanSelectorOpen(true)}
+                  className="text-[#cccccc] hover:text-white focus:outline-none"
+                >
+                  {settings.bean}
+                </button>
+                <BeanSelector
+                  isOpen={isBeanSelectorOpen}
+                  onClose={() => setIsBeanSelectorOpen(false)}
+                  onSelect={async (path) => {
+                    setSettings((prev) => ({ ...prev, bean: path }));
+                    const result = await updateSettings.mutateAsync({
+                      ...settings,
+                      bean: path,
+                    });
+                    await updateSteps.mutateAsync();
+                  }}
+                />
+              </>
+            }
+          />
+          <DetailRow
+            label="Method"
+            value={
+              <>
+                <button
+                  onClick={() => setMethodSelectorOpen(true)}
+                  className="text-[#cccccc] hover:text-white focus:outline-none"
+                >
+                  {settings.method}
+                </button>
+                <MethodSelector
+                  isOpen={isMethodSelectorOpen}
+                  onClose={() => setMethodSelectorOpen(false)}
+                  onSelect={(method) => {
+                    setSettings((prev) => ({ ...prev, method }));
+                  }}
+                />
+              </>
+            }
+          />
+          <DetailRow
+            label="Settings"
             value={
               <div className="flex items-center gap-4">
                 <span className="truncate text-[#cccccc]">
                   {`[coffee, ${settings.settings.coffee}] / [water_ratio, ${settings.settings.water_ratio}] / [grind_size, ${settings.settings.grind_size}] / [water_temp, ${settings.settings.water_temp}]`}
                 </span>
-                <SettingsPopover
+                <button
+                  onClick={() => setSettingsSelectorOpen(true)}
+                  className="text-[#cccccc] hover:text-white focus:outline-none"
+                >
+                  <Settings2 className="h-4 w-4" />
+                </button>
+                <SettingsSelector
+                  isOpen={isSettingsSelectorOpen}
+                  onClose={() => setSettingsSelectorOpen(false)}
                   settings={settings.settings}
                   onUpdate={(newSettings) => {
-                    setSettings(prev => ({ ...prev, settings: newSettings }));
+                    setSettings((prev) => ({ ...prev, settings: newSettings }));
                   }}
                 />
               </div>
@@ -156,7 +196,7 @@ export default function BrewingPage() {
             valueClass="truncate text-[#cccccc]"
           />
           <div className="mt-3 flex justify-end">
-            <Button 
+            <Button
               onClick={async () => {
                 const result = await updateSettings.mutateAsync(settings);
                 // After settings are updated, update the brewing steps
@@ -182,13 +222,14 @@ export default function BrewingPage() {
                     if (updateSettings.data?.recommendation?.message) {
                       toast(updateSettings.data.recommendation.message, {
                         duration: 4000,
-                        className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
+                        className:
+                          "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
                       });
                     }
                   }}
                   className={`bg-[#333333] px-1 rounded ${
-                    updateSettings.data?.recommendation?.status === "Allowed" 
-                      ? "text-[#A3E635] hover:text-[#bef264]" 
+                    updateSettings.data?.recommendation?.status === "Allowed"
+                      ? "text-[#A3E635] hover:text-[#bef264]"
                       : "text-red-500 hover:text-red-400"
                   } hover:bg-[#444444] transition-colors cursor-pointer`}
                   title="Click to see recommendation details"
@@ -199,37 +240,48 @@ export default function BrewingPage() {
             />
 
             <Card className="bg-[#1e1e1e] rounded-md p-3">
-              {updateSettings.data?.recommendation?.message && (
-                <p className="text-sm text-[#cccccc] mb-3">
-                  {updateSettings.data.recommendation.message}
-                </p>
-              )}
               <SectionHeader
                 icon={<Zap className="w-3 h-3 text-[#888888]" />}
                 title="Brewing steps"
-                status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">200</span>}
+                status={
+                  <span className="bg-[#333333] px-1 rounded text-[#A3E635]">
+                    200
+                  </span>
+                }
               />
 
               {updateSteps.data?.steps && (
                 <>
-                  {settings.method === 'V60' && (
+                  {settings.method === "V60" && (
                     <>
-                      <DetailRow label="Rinse" value={updateSteps.data.steps.rinse} />
-                      <DetailRow label="Add Coffee" value={updateSteps.data.steps.addCoffee} />
+                      <DetailRow
+                        label="Rinse"
+                        value={updateSteps.data.steps.rinse}
+                      />
+                      <DetailRow
+                        label="Add Coffee"
+                        value={updateSteps.data.steps.addCoffee}
+                      />
                       <DetailRow
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-2">
                             <>
                               <div className="flex items-center gap-1">
-                                {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                                  <React.Fragment key={`${step.step}-${index}`}>
-                                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                    <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                                  </React.Fragment>
-                                ))}
+                                {updateSteps.data?.steps?.brewing?.map(
+                                  (step, index) => (
+                                    <React.Fragment
+                                      key={`${step.step}-${index}`}
+                                    >
+                                      <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                      <span className="text-[#cccccc]">
+                                        {step.step} | {step.amount}/{step.time}
+                                      </span>
+                                    </React.Fragment>
+                                  ),
+                                )}
                               </div>
-                              {settings.method === 'V60' && (
+                              {settings.method === "V60" && (
                                 <BrewingStepsPopover
                                   method={settings.method}
                                   steps={updateSteps.data?.steps?.brewing || []}
@@ -237,20 +289,28 @@ export default function BrewingPage() {
                                     // First update settings to trigger step recalculation
                                     await updateSettings.mutateAsync(settings);
                                     // Then update the specific step value
-                                    const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                    newSteps[index] = { ...newSteps[index], [field]: value };
+                                    const newSteps = [
+                                      ...(updateSteps.data?.steps?.brewing ||
+                                        []),
+                                    ];
+                                    newSteps[index] = {
+                                      ...newSteps[index],
+                                      [field]: value,
+                                    };
                                     await updateSteps.mutateAsync({
                                       ...updateSteps.data,
                                       steps: {
                                         ...updateSteps.data?.steps,
-                                        brewing: newSteps
-                                      }
+                                        brewing: newSteps,
+                                      },
                                     });
                                   }}
                                   onClose={async () => {
                                     // Save changes when popover closes
                                     if (updateSteps.data) {
-                                      await updateSteps.mutateAsync(updateSteps.data);
+                                      await updateSteps.mutateAsync(
+                                        updateSteps.data,
+                                      );
                                     }
                                   }}
                                 />
@@ -259,28 +319,43 @@ export default function BrewingPage() {
                           </div>
                         }
                       />
-                      <DetailRow label="Dripping" value={updateSteps.data.steps.dripping} />
-                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                      <DetailRow
+                        label="Dripping"
+                        value={updateSteps.data.steps.dripping}
+                      />
+                      <DetailRow
+                        label="Final Brew"
+                        value={updateSteps.data.steps.finalBrew}
+                      />
                     </>
                   )}
 
-                  {settings.method === 'French Press' && (
+                  {settings.method === "French Press" && (
                     <>
-                      <DetailRow label="Add Coffee" value={updateSteps.data.steps.addCoffee} />
+                      <DetailRow
+                        label="Add Coffee"
+                        value={updateSteps.data.steps.addCoffee}
+                      />
                       <DetailRow
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-2">
                             <>
                               <div className="flex items-center gap-1">
-                                {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                                  <React.Fragment key={`${step.step}-${index}`}>
-                                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                    <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                                  </React.Fragment>
-                                ))}
+                                {updateSteps.data?.steps?.brewing?.map(
+                                  (step, index) => (
+                                    <React.Fragment
+                                      key={`${step.step}-${index}`}
+                                    >
+                                      <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                      <span className="text-[#cccccc]">
+                                        {step.step} | {step.amount}/{step.time}
+                                      </span>
+                                    </React.Fragment>
+                                  ),
+                                )}
                               </div>
-                              {settings.method === 'V60' && (
+                              {settings.method === "V60" && (
                                 <BrewingStepsPopover
                                   method={settings.method}
                                   steps={updateSteps.data?.steps?.brewing || []}
@@ -288,20 +363,28 @@ export default function BrewingPage() {
                                     // First update settings to trigger step recalculation
                                     await updateSettings.mutateAsync(settings);
                                     // Then update the specific step value
-                                    const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                    newSteps[index] = { ...newSteps[index], [field]: value };
+                                    const newSteps = [
+                                      ...(updateSteps.data?.steps?.brewing ||
+                                        []),
+                                    ];
+                                    newSteps[index] = {
+                                      ...newSteps[index],
+                                      [field]: value,
+                                    };
                                     await updateSteps.mutateAsync({
                                       ...updateSteps.data,
                                       steps: {
                                         ...updateSteps.data?.steps,
-                                        brewing: newSteps
-                                      }
+                                        brewing: newSteps,
+                                      },
                                     });
                                   }}
                                   onClose={async () => {
                                     // Save changes when popover closes
                                     if (updateSteps.data) {
-                                      await updateSteps.mutateAsync(updateSteps.data);
+                                      await updateSteps.mutateAsync(
+                                        updateSteps.data,
+                                      );
                                     }
                                   }}
                                 />
@@ -310,44 +393,72 @@ export default function BrewingPage() {
                           </div>
                         }
                       />
-                      <DetailRow label="Plunge" value={updateSteps.data.steps.plunge} />
-                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                      <DetailRow
+                        label="Plunge"
+                        value={updateSteps.data.steps.plunge}
+                      />
+                      <DetailRow
+                        label="Final Brew"
+                        value={updateSteps.data.steps.finalBrew}
+                      />
                     </>
                   )}
 
-                  {settings.method === 'Espresso' && (
+                  {settings.method === "Espresso" && (
                     <>
-                      <DetailRow label="Prep" value={updateSteps.data.steps.prep} />
-                      <DetailRow label="Grind" value={updateSteps.data.steps.grind} />
-                      <DetailRow label="Tamp" value={updateSteps.data.steps.tamp} />
-                      <DetailRow 
-                        label="Shot" 
+                      <DetailRow
+                        label="Prep"
+                        value={updateSteps.data.steps.prep}
+                      />
+                      <DetailRow
+                        label="Grind"
+                        value={updateSteps.data.steps.grind}
+                      />
+                      <DetailRow
+                        label="Tamp"
+                        value={updateSteps.data.steps.tamp}
+                      />
+                      <DetailRow
+                        label="Shot"
                         value={
                           <div className="flex items-center justify-end gap-2">
                             <span>{updateSteps.data.steps.shot}</span>
                             <BrewingStepsPopover
                               method={settings.method}
-                              steps={[{ 
-                                step: 'Shot', 
-                                amount: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[0] : '0ml', 
-                                time: updateSteps.data?.steps?.shot ? updateSteps.data.steps.shot.split(' / ')[1] : '0s' 
-                              }]}
+                              steps={[
+                                {
+                                  step: "Shot",
+                                  amount: updateSteps.data?.steps?.shot
+                                    ? updateSteps.data.steps.shot.split(
+                                        " / ",
+                                      )[0]
+                                    : "0ml",
+                                  time: updateSteps.data?.steps?.shot
+                                    ? updateSteps.data.steps.shot.split(
+                                        " / ",
+                                      )[1]
+                                    : "0s",
+                                },
+                              ]}
                               onUpdate={async (index, field, value) => {
                                 await updateSettings.mutateAsync(settings);
                                 const newSteps = {
                                   ...updateSteps.data?.steps,
-                                  shot: `${field === 'amount' ? value : (updateSteps.data?.steps?.shot?.split(' / ')?.[0] || '0ml')} / ${field === 'time' ? value : (updateSteps.data?.steps?.shot?.split(' / ')?.[1] || '0s')}`
+                                  shot: `${field === "amount" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[0] || "0ml"} / ${field === "time" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[1] || "0s"}`,
                                 };
                                 await updateSteps.mutateAsync({
                                   ...updateSteps.data,
-                                  steps: newSteps
+                                  steps: newSteps,
                                 });
                               }}
                             />
                           </div>
-                        } 
+                        }
                       />
-                      <DetailRow label="Final Brew" value={updateSteps.data.steps.finalBrew} />
+                      <DetailRow
+                        label="Final Brew"
+                        value={updateSteps.data.steps.finalBrew}
+                      />
                     </>
                   )}
                 </>
@@ -355,11 +466,13 @@ export default function BrewingPage() {
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>
-                <button 
+                <button
                   onClick={() => setCurrentStep(3)}
                   className="w-full flex items-center gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
                 >
-                  <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">BEAN</div>
+                  <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">
+                    BEAN
+                  </div>
                   <div className="text-[#cccccc]">brewise.coffee.com/ptoni</div>
                   <div className="flex items-center gap-1 ml-auto">
                     <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
@@ -379,7 +492,7 @@ export default function BrewingPage() {
               icon={<div className="w-1.5 h-1.5 rounded-full bg-[#888888]" />}
             />
 
-            <TastingForm 
+            <TastingForm
               settings={{
                 method: settings.method,
                 coffee: settings.settings.coffee,
