@@ -1,99 +1,111 @@
-"use client";
 
-import * as React from "react";
+'use client'
+
+import * as React from "react"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Settings2 } from "lucide-react";
+} from "@/components/ui/popover"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Settings2 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-interface BrewingStepSettings {
-  step: string;
-  amount: string;
-  time: string;
+interface BrewingStep {
+  step: string
+  amount: string
+  time: string
 }
 
 interface Props {
-  method: string;
-  steps: BrewingStepSettings[];
-  onUpdate: (index: number, field: keyof BrewingStepSettings, value: string) => void;
-  queryClient?: any;
+  method: string
+  steps: BrewingStep[]
+  onUpdate: (index: number, field: keyof BrewingStep, value: string) => void
+  queryClient?: any
 }
 
-export function BrewingStepsPopover({ method, steps, onUpdate, queryClient }: Props) {
-  const [open, setOpen] = React.useState(false);
-  const [localSteps, setLocalSteps] = React.useState(steps);
+const StepInput = ({ 
+  label, 
+  value, 
+  onChange,
+  placeholder
+}: { 
+  label: string
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+}) => (
+  <div className="space-y-2">
+    <Label className="text-sm text-[#bbbbbb]">
+      {label}
+    </Label>
+    <Input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={cn(
+        "bg-[#2a2a2a] border-[#333333] text-[#f0f0f0]",
+        "focus:border-[#444444] focus:ring-[#444444]"
+      )}
+    />
+  </div>
+);
+
+export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
+  const [localSteps, setLocalSteps] = React.useState(steps)
 
   React.useEffect(() => {
-    setLocalSteps(steps);
-  }, [steps]);
+    setLocalSteps(steps)
+  }, [steps])
 
-  const handleValueChange = (
-    index: number,
-    field: keyof BrewingStepSettings,
-    value: string,
-  ) => {
-    const newSteps = [...localSteps];
-    if (field === "amount") {
-      const numericValue = value.replace(/\D/g, "");
-      newSteps[index] = { ...newSteps[index], [field]: `${numericValue}ml` };
-    } else {
-      newSteps[index] = { ...newSteps[index], [field]: value };
+  const handleValueChange = (index: number, field: keyof BrewingStep, value: string) => {
+    const newSteps = [...localSteps]
+    newSteps[index] = { ...newSteps[index], [field]: value }
+    setLocalSteps(newSteps)
+    onUpdate(index, field, value)
+  }
+
+  const getFieldPlaceholder = (field: keyof BrewingStep, stepName: string) => {
+    switch (field) {
+      case 'amount':
+        return stepName === 'Steep' ? 'Wait' : 'Enter amount (ml)'
+      case 'time':
+        return 'Enter time (e.g. 30s, 4min)'
+      default:
+        return ''
     }
-    setLocalSteps(newSteps);
-    onUpdate(index, field, newSteps[index][field]);
-  };
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
-        <Settings2 className="w-4 h-4 text-[#888888] hover:text-[#cccccc] transition-colors cursor-pointer" />
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="text-[#cccccc] hover:text-white focus:outline-none">
+          <Settings2 className="h-4 w-4" />
+        </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#cccccc]">
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            {localSteps.map((step, index) => (
-              <div key={`${step.step}-${index}`} className="grid gap-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative">
-                    <Label htmlFor={`amount-${index}`}>
-                      {step.step} Amount
-                    </Label>
-                    <Input
-                      id={`amount-${index}`}
-                      value={step.amount.replace("ml", "")}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        handleValueChange(index, "amount", newValue);
-                      }}
-                      type="number"
-                      className="h-8 bg-[#2a2a2a] border-[#333333] pr-8 mt-1"
-                    />
-                    <span className="absolute right-3 top-[60%] -translate-y-1/2 text-[#888888]">
-                      ml
-                    </span>
-                  </div>
-                  <div>
-                    <Label htmlFor={`time-${index}`}>{step.step} Time</Label>
-                    <Input
-                      id={`time-${index}`}
-                      value={step.time}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        handleValueChange(index, "time", newValue);
-                      }}
-                      className="h-8 bg-[#2a2a2a] border-[#333333] mt-1"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <PopoverContent className="w-80 bg-[#1e1e1e] border-[#333333] text-[#f0f0f0] p-4">
+        <div className="space-y-4">
+          {localSteps.map((step, index) => (
+            <div key={`${step.step}-${index}`} className="space-y-4 pb-4 border-b border-[#333333]">
+              <h3 className="text-sm font-medium text-[#f0f0f0]">{step.step}</h3>
+              <StepInput
+                label="Amount"
+                value={step.amount}
+                onChange={(value) => handleValueChange(index, 'amount', value)}
+                placeholder={getFieldPlaceholder('amount', step.step)}
+              />
+              <StepInput
+                label="Time"
+                value={step.time}
+                onChange={(value) => handleValueChange(index, 'time', value)}
+                placeholder={getFieldPlaceholder('time', step.step)}
+              />
+            </div>
+          ))}
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }
