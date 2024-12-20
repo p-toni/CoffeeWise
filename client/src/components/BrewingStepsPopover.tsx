@@ -33,13 +33,25 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
 
   const handleValueChange = (index: number, field: keyof BrewingStepSettings, value: string) => {
     const newSteps = [...localSteps];
-    newSteps[index] = { ...newSteps[index], [field]: value };
+    if (field === 'amount') {
+      // Extract number from value, keep 'ml' in display
+      const numericValue = value.replace(/\D/g, '');
+      newSteps[index] = { ...newSteps[index], [field]: `${numericValue}ml` };
+    } else {
+      newSteps[index] = { ...newSteps[index], [field]: value };
+    }
     setLocalSteps(newSteps);
-    onUpdate(newSteps);
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      onUpdate(localSteps);
+    }
+    setOpen(newOpen);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger>
         <Settings2 className="w-4 h-4 text-[#888888] hover:text-[#cccccc] transition-colors cursor-pointer" />
       </PopoverTrigger>
@@ -50,12 +62,16 @@ export function BrewingStepsPopover({ method, steps, onUpdate }: Props) {
               <div key={`${step.step}-${index}`} className="grid gap-2">
                 <Label htmlFor={`step-${index}`}>{step.step}</Label>
                 <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    id={`amount-${index}`}
-                    value={step.amount}
-                    onChange={(e) => handleValueChange(index, 'amount', e.target.value)}
-                    className="h-8 bg-[#2a2a2a] border-[#333333]"
-                  />
+                  <div className="relative">
+                    <Input
+                      id={`amount-${index}`}
+                      value={step.amount.replace('ml', '')}
+                      onChange={(e) => handleValueChange(index, 'amount', e.target.value)}
+                      type="number"
+                      className="h-8 bg-[#2a2a2a] border-[#333333] pr-8"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888888]">ml</span>
+                  </div>
                   <Input
                     id={`time-${index}`}
                     value={step.time}
