@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { Shield, Zap, Settings2 } from 'lucide-react'
 import { TastingForm } from "@/components/TastingForm"
 import { toast } from "sonner"
