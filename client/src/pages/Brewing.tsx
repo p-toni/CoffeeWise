@@ -246,7 +246,10 @@ export default function BrewingPage() {
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>
-                <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setCurrentStep(3)}
+                  className="w-full flex items-center gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
+                >
                   <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">BEAN</div>
                   <div className="text-[#cccccc]">brewise.coffee.com/ptoni</div>
                   <div className="flex items-center gap-1 ml-auto">
@@ -254,7 +257,7 @@ export default function BrewingPage() {
                     <span className="text-[#888888] text-[0.7rem]">68ms</span>
                     <div className="w-6 h-[0.2rem] bg-[#A3E635]/50 rounded-full" />
                   </div>
-                </div>
+                </button>
               </div>
             </Card>
           </>
