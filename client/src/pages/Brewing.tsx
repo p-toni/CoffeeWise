@@ -161,6 +161,11 @@ export default function BrewingPage() {
                   onClose={() => setIsBeanSelectorOpen(false)}
                   onSelect={async (path) => {
                     setSettings((prev) => ({ ...prev, bean: path }));
+                    const result = await updateSettings.mutateAsync({
+                      ...settings,
+                      bean: path,
+                    });
+                    await updateSteps.mutateAsync();
                   }}
                 />
               </>
@@ -190,7 +195,6 @@ export default function BrewingPage() {
                         water_temp: prev.brewingMethods[method].water_temp
                       }
                     }));
-                    setMethodSelectorOpen(false);
                   }}
                 />
               </>
@@ -313,6 +317,9 @@ export default function BrewingPage() {
                                 method={settings.method}
                                 steps={updateSteps.data?.steps?.brewing || []}
                                 onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
                                   const newSteps = [
                                     ...(updateSteps.data?.steps?.brewing || []),
                                   ];
@@ -381,6 +388,9 @@ export default function BrewingPage() {
                                 method={settings.method}
                                 steps={updateSteps.data?.steps?.brewing || []}
                                 onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
                                   const newSteps = [
                                     ...(updateSteps.data?.steps?.brewing || []),
                                   ];
