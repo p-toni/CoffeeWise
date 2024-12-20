@@ -43,7 +43,11 @@ Respond with a JSON object in this format:
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const recommendation = JSON.parse(response.text());
+    const text = response.text();
+    
+    // Clean up the response text by removing markdown formatting
+    const cleanedText = text.replace(/```json\n|\n```/g, '').trim();
+    const recommendation = JSON.parse(cleanedText);
 
     const session = await db.update(brewingSessions)
       .set({ 
