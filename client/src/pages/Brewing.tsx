@@ -12,6 +12,7 @@ import { useStartBrewing, useUpdateSettings, useUpdateSteps, useUpdateTasting } 
 import { useState } from "react"
 import { MethodSelector } from "@/components/MethodSelector"
 import { BeanSelector } from "@/components/BeanSelector"
+import { BrewingStepsPopover } from "@/components/BrewingStepsPopover"
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -217,13 +218,28 @@ export default function BrewingPage() {
                       <DetailRow
                         label="Brewing"
                         value={
-                          <div className="flex items-center justify-end gap-1">
-                            {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                              <React.Fragment key={`${step.step}-${index}`}>
-                                <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                              </React.Fragment>
-                            ))}
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center gap-1">
+                              {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                                <React.Fragment key={`${step.step}-${index}`}>
+                                  <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                  <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                                </React.Fragment>
+                              ))}
+                            </div>
+                            <BrewingStepsPopover
+                              method={settings.method}
+                              steps={updateSteps.data?.steps?.brewing || []}
+                              onUpdate={async (newSteps) => {
+                                const result = await updateSteps.mutateAsync({
+                                  ...updateSteps.data,
+                                  steps: {
+                                    ...updateSteps.data?.steps,
+                                    brewing: newSteps
+                                  }
+                                });
+                              }}
+                            />
                           </div>
                         }
                       />
@@ -238,13 +254,28 @@ export default function BrewingPage() {
                       <DetailRow
                         label="Brewing"
                         value={
-                          <div className="flex items-center justify-end gap-1">
-                            {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                              <React.Fragment key={`${step.step}-${index}`}>
-                                <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                              </React.Fragment>
-                            ))}
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center gap-1">
+                              {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                                <React.Fragment key={`${step.step}-${index}`}>
+                                  <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                  <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                                </React.Fragment>
+                              ))}
+                            </div>
+                            <BrewingStepsPopover
+                              method={settings.method}
+                              steps={updateSteps.data?.steps?.brewing || []}
+                              onUpdate={async (newSteps) => {
+                                const result = await updateSteps.mutateAsync({
+                                  ...updateSteps.data,
+                                  steps: {
+                                    ...updateSteps.data?.steps,
+                                    brewing: newSteps
+                                  }
+                                });
+                              }}
+                            />
                           </div>
                         }
                       />

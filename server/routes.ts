@@ -183,7 +183,9 @@ Respond with a clear recommendation focusing on whether these settings are optim
             prep: 'Preheat machine and portafilter',
             grind: 'Grind coffee fine, dose into portafilter',
             tamp: 'Tamp with 30 lbs pressure, level and polish',
-            shot: `Pull shot: ${settings.coffee * 2}ml / 25-30s`,
+            brewing: [
+              { step: 'Shot', amount: `${settings.coffee * 2}ml`, time: '30s' }
+            ],
             finalBrew: `${settings.coffee * 2}ml / 30s`
           };
         default:
