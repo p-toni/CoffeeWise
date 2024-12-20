@@ -197,28 +197,72 @@ export default function BrewingPage() {
                 status={<span className="bg-[#333333] px-1 rounded text-[#A3E635]">200</span>}
               />
 
-              <DetailRow label="Rinse" value={updateSteps.data?.steps?.rinse?.join(" /Discard the rinse water.")} />
-              <DetailRow label="Add Coffee" value={updateSteps.data?.steps?.addCoffee?.join(" /")} />
+              <DetailRow 
+                label="Rinse" 
+                value={
+                  <div className="text-right space-y-1">
+                    {updateSteps.data?.steps?.rinse?.map((step, index) => (
+                      <div key={index} className="text-[#cccccc]">{step}</div>
+                    ))}
+                  </div>
+                }
+              />
+              <DetailRow 
+                label="Add Coffee" 
+                value={
+                  <div className="text-right space-y-1">
+                    {updateSteps.data?.steps?.addCoffee?.map((step, index) => (
+                      <div key={index} className="text-[#cccccc]">{step}</div>
+                    ))}
+                  </div>
+                }
+              />
               <DetailRow
                 label="Brewing"
                 value={
-                  <div className="flex items-center justify-end gap-1">
+                  <div className="text-right space-y-3">
                     {updateSteps.data?.steps?.brewing && (
                       <>
-                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">Bloom | {updateSteps.data.steps.brewing.bloom}</span>
-                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">First Pour | {updateSteps.data.steps.brewing.firstPour}</span>
-                        <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                        <span className="text-[#cccccc]">Second Pour | {updateSteps.data.steps.brewing.secondPour}</span>
+                        <div>
+                          <div className="text-[#cccccc]">Bloom | Pour {updateSteps.data.steps.brewing.bloom}</div>
+                          <div className="text-[#888888] text-sm mt-1">
+                            of {settings.settings.water_temp}°C water over the grounds, ensuring all grounds are saturated. Let it bloom for 30-40 seconds.
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[#cccccc]">First Pour | Pour another {updateSteps.data.steps.brewing.firstPour}</div>
+                          <div className="text-[#888888] text-sm mt-1">
+                            of water in a circular motion, avoiding the edges. Wait until the water level is about half way down.
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[#cccccc]">Second Pour | Pour the remaining {updateSteps.data.steps.brewing.secondPour}</div>
+                          <div className="text-[#888888] text-sm mt-1">
+                            of water in the same circular motion. Wait until the water level is about half way down.
+                          </div>
+                        </div>
                       </>
                     )}
                   </div>
                 }
                 valueClass=""
               />
-              <DetailRow label="Dripping" value="30s" />
-              <DetailRow label="Final Brew" value={updateSteps.data?.steps?.finalBrew} />
+              <DetailRow 
+                label="Dripping" 
+                value={
+                  <div className="text-right">
+                    <span className="text-[#cccccc]">30s</span>
+                  </div>
+                }
+              />
+              <DetailRow 
+                label="Final Brew" 
+                value={
+                  <div className="text-right">
+                    <span className="text-[#cccccc]">Remove the V60 and enjoy your coffee.</span>
+                  </div>
+                }
+              />
 
               <div className="mt-2">
                 <div className="text-[#888888] text-sm mb-1">External APIs</div>
