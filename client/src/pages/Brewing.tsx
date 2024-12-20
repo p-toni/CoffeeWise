@@ -17,7 +17,6 @@ import {
 import { useState } from "react";
 import { MethodSelector } from "@/components/MethodSelector";
 import { BeanSelector } from "@/components/BeanSelector";
-import { BrewingStepsPopover } from "@/components/BrewingStepsPopover";
 import { BrewingSteps } from "@/components/BrewingSteps"; // Import the new component
 import { queryClient } from "@/lib/queryClient";
 
@@ -283,7 +282,9 @@ export default function BrewingPage() {
                                   ),
                                 )}
                               </div>
-                              <BrewingStepsPopover
+                              <BrewingSteps
+                                isOpen={isBrewingStepsOpen}
+                                onClose={() => setBrewingStepsOpen(false)}
                                 method={settings.method}
                                 steps={updateSteps.data?.steps?.brewing || []}
                                 onUpdate={async (index, field, value) => {
@@ -305,14 +306,6 @@ export default function BrewingPage() {
                                       brewing: newSteps,
                                     },
                                   });
-                                }}
-                                onClose={async () => {
-                                  // Save changes when popover closes
-                                  if (updateSteps.data) {
-                                    await updateSteps.mutateAsync(
-                                      updateSteps.data,
-                                    );
-                                  }
                                 }}
                               />
                             </>
@@ -421,35 +414,43 @@ export default function BrewingPage() {
                         value={
                           <div className="flex items-center justify-end gap-2">
                             <span>{updateSteps.data.steps.shot}</span>
-                            <BrewingStepsPopover
-                              method={settings.method}
-                              steps={[
-                                {
-                                  step: "Shot",
-                                  amount: updateSteps.data?.steps?.shot
-                                    ? updateSteps.data.steps.shot.split(
-                                        " / ",
-                                      )[0]
-                                    : "0ml",
-                                  time: updateSteps.data?.steps?.shot
-                                    ? updateSteps.data.steps.shot.split(
-                                        " / ",
-                                      )[1]
-                                    : "0s",
-                                },
-                              ]}
-                              onUpdate={async (index, field, value) => {
-                                await updateSettings.mutateAsync(settings);
-                                const newSteps = {
-                                  ...updateSteps.data?.steps,
-                                  shot: `${field === "amount" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[0] || "0ml"} / ${field === "time" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[1] || "0s"}`,
-                                };
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: newSteps,
-                                });
-                              }}
-                            />
+                            <button
+                                onClick={() => setBrewingStepsOpen(true)}
+                                className="text-[#cccccc] hover:text-white focus:outline-none"
+                              >
+                                <Settings2 className="h-4 w-4" />
+                              </button>
+                              <BrewingSteps
+                                isOpen={isBrewingStepsOpen}
+                                onClose={() => setBrewingStepsOpen(false)}
+                                method={settings.method}
+                                steps={[
+                                  {
+                                    step: "Shot",
+                                    amount: updateSteps.data?.steps?.shot
+                                      ? updateSteps.data.steps.shot.split(
+                                          " / ",
+                                        )[0]
+                                      : "0ml",
+                                    time: updateSteps.data?.steps?.shot
+                                      ? updateSteps.data.steps.shot.split(
+                                          " / ",
+                                        )[1]
+                                      : "0s",
+                                  },
+                                ]}
+                                onUpdate={async (index, field, value) => {
+                                  await updateSettings.mutateAsync(settings);
+                                  const newSteps = {
+                                    ...updateSteps.data?.steps,
+                                    shot: `${field === "amount" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[0] || "0ml"} / ${field === "time" ? value : updateSteps.data?.steps?.shot?.split(" / ")?.[1] || "0s"}`,
+                                  };
+                                  await updateSteps.mutateAsync({
+                                    ...updateSteps.data,
+                                    steps: newSteps,
+                                  });
+                                }}
+                              />
                           </div>
                         }
                       />
