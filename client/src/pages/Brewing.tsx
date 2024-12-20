@@ -220,27 +220,28 @@ export default function BrewingPage() {
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-2">
-                            <div className="flex items-center gap-1">
-                              {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                                <React.Fragment key={`${step.step}-${index}`}>
-                                  <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                  <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                                </React.Fragment>
-                              ))}
-                            </div>
-                            {settings.method === 'V60' && (
-                              <BrewingStepsPopover
-                                method={settings.method}
-                                steps={updateSteps.data?.steps?.brewing || []}
-                                onUpdate={async (index, field, value) => {
-                                // First update settings to trigger step recalculation
-                                await updateSettings.mutateAsync(settings);
-                                // Then update the specific step value
-                                const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                newSteps[index] = { ...newSteps[index], [field]: value };
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: {
+                            <>
+                              <div className="flex items-center gap-1">
+                                {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                                  <React.Fragment key={`${step.step}-${index}`}>
+                                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                    <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                                  </React.Fragment>
+                                ))}
+                              </div>
+                              {settings.method === 'V60' && (
+                                <BrewingStepsPopover
+                                  method={settings.method}
+                                  steps={updateSteps.data?.steps?.brewing || []}
+                                  onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
+                                  const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                  newSteps[index] = { ...newSteps[index], [field]: value };
+                                  await updateSteps.mutateAsync({
+                                    ...updateSteps.data,
+                                    steps: {
                                     ...updateSteps.data?.steps,
                                     brewing: newSteps
                                   }
@@ -268,27 +269,28 @@ export default function BrewingPage() {
                         label="Brewing"
                         value={
                           <div className="flex items-center justify-end gap-2">
-                            <div className="flex items-center gap-1">
-                              {updateSteps.data?.steps?.brewing?.map((step, index) => (
-                                <React.Fragment key={`${step.step}-${index}`}>
-                                  <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
-                                  <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
-                                </React.Fragment>
-                              ))}
-                            </div>
-                            {settings.method === 'V60' && (
-                              <BrewingStepsPopover
-                                method={settings.method}
-                                steps={updateSteps.data?.steps?.brewing || []}
-                                onUpdate={async (index, field, value) => {
-                                // First update settings to trigger step recalculation
-                                await updateSettings.mutateAsync(settings);
-                                // Then update the specific step value
-                                const newSteps = [...updateSteps.data?.steps?.brewing || []];
-                                newSteps[index] = { ...newSteps[index], [field]: value };
-                                await updateSteps.mutateAsync({
-                                  ...updateSteps.data,
-                                  steps: {
+                            <>
+                              <div className="flex items-center gap-1">
+                                {updateSteps.data?.steps?.brewing?.map((step, index) => (
+                                  <React.Fragment key={`${step.step}-${index}`}>
+                                    <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
+                                    <span className="text-[#cccccc]">{step.step} | {step.amount}/{step.time}</span>
+                                  </React.Fragment>
+                                ))}
+                              </div>
+                              {settings.method === 'V60' && (
+                                <BrewingStepsPopover
+                                  method={settings.method}
+                                  steps={updateSteps.data?.steps?.brewing || []}
+                                  onUpdate={async (index, field, value) => {
+                                  // First update settings to trigger step recalculation
+                                  await updateSettings.mutateAsync(settings);
+                                  // Then update the specific step value
+                                  const newSteps = [...updateSteps.data?.steps?.brewing || []];
+                                  newSteps[index] = { ...newSteps[index], [field]: value };
+                                  await updateSteps.mutateAsync({
+                                    ...updateSteps.data,
+                                    steps: {
                                     ...updateSteps.data?.steps,
                                     brewing: newSteps
                                   }
