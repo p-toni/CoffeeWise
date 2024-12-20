@@ -73,12 +73,19 @@ export function BrewingStepsModal({ method, steps, onUpdate }: Props) {
   };
 
   const handleSave = async () => {
+    if (JSON.stringify(localSteps) === JSON.stringify(steps)) {
+      setIsOpen(false);
+      return; // No changes were made
+    }
+
     try {
       setIsSaving(true);
       await onUpdate(localSteps);
+      // Only close if the update was successful
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to save brewing steps:', error);
+      // Keep the modal open if there was an error
     } finally {
       setIsSaving(false);
     }

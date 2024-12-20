@@ -38,8 +38,16 @@ export const useUpdateSteps = (brewingId: string) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to update steps");
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error || "Failed to update steps");
+      }
       return res.json();
+    },
+    onSuccess: () => {
+      // Invalidate both the steps and settings queries since they're related
+      queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/steps`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/brewing/${brewingId}/settings`] });
     },
   });
 };
