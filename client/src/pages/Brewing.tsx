@@ -199,47 +199,26 @@ export default function BrewingPage() {
 
               <DetailRow 
                 label="Rinse" 
-                value={
-                  <div className="text-right space-y-1">
-                    {updateSteps.data?.steps?.rinse?.map((step, index) => (
-                      <div key={index} className="text-[#cccccc]">{step}</div>
-                    ))}
-                  </div>
-                }
+                value={`Heat water to ${settings.settings.water_temp}°C / Pour over the filter and preheat the brewer.`}
               />
               <DetailRow 
                 label="Add Coffee" 
-                value={
-                  <div className="text-right space-y-1">
-                    {updateSteps.data?.steps?.addCoffee?.map((step, index) => (
-                      <div key={index} className="text-[#cccccc]">{step}</div>
-                    ))}
-                  </div>
-                }
+                value={`Add ${settings.settings.coffee}g`}
               />
               <DetailRow
                 label="Brewing"
                 value={
-                  <div className="text-right space-y-3">
+                  <div className="text-right space-y-2">
                     {updateSteps.data?.steps?.brewing && (
                       <>
-                        <div>
-                          <div className="text-[#cccccc]">Bloom | Pour {updateSteps.data.steps.brewing.bloom}</div>
-                          <div className="text-[#888888] text-sm mt-1">
-                            of {settings.settings.water_temp}°C water over the grounds, ensuring all grounds are saturated. Let it bloom for 30-40 seconds.
-                          </div>
+                        <div className="text-[#cccccc]">
+                          Bloom | Pour {updateSteps.data.steps.brewing.bloom} of {settings.settings.water_temp}°C water, 30s
                         </div>
-                        <div>
-                          <div className="text-[#cccccc]">First Pour | Pour another {updateSteps.data.steps.brewing.firstPour}</div>
-                          <div className="text-[#888888] text-sm mt-1">
-                            of water in a circular motion, avoiding the edges. Wait until the water level is about half way down.
-                          </div>
+                        <div className="text-[#cccccc]">
+                          First Pour | {updateSteps.data.steps.brewing.firstPour} in circular motion, 45s
                         </div>
-                        <div>
-                          <div className="text-[#cccccc]">Second Pour | Pour the remaining {updateSteps.data.steps.brewing.secondPour}</div>
-                          <div className="text-[#888888] text-sm mt-1">
-                            of water in the same circular motion. Wait until the water level is about half way down.
-                          </div>
+                        <div className="text-[#cccccc]">
+                          Second Pour | {updateSteps.data.steps.brewing.secondPour} to finish, 30s
                         </div>
                       </>
                     )}
