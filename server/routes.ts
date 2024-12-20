@@ -142,8 +142,6 @@ Respond with a clear recommendation focusing on whether these settings are optim
 
   app.post("/api/brewing/:id/steps", async (req, res) => {
     const { id } = req.params;
-    const updatedSteps = req.body;
-
     // Get the current session to access settings
     const currentSession = await db.query.brewingSessions.findFirst({
       where: eq(brewingSessions.brewingId, id)
@@ -153,19 +151,6 @@ Respond with a clear recommendation focusing on whether these settings are optim
       return res.status(404).json({ message: "Session not found" });
     }
 
-    // If we receive updated steps, use those instead of generating new ones
-    if (updatedSteps && updatedSteps.steps) {
-      const session = await db.update(brewingSessions)
-        .set({
-          steps: updatedSteps.steps,
-          status: "brewing"
-        })
-        .where(eq(brewingSessions.brewingId, id))
-        .returning();
-      return res.json(session[0]);
-    }
-
-    // Otherwise generate default steps based on method and settings
     const getMethodSteps = (method: string, settings: any) => {
       const waterAmount = settings.coffee * settings.water_ratio;
       
