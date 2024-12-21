@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
 import { brewingSessions } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, SchemaType } from "@google/generative-ai";
 
@@ -115,6 +115,25 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
+    // Get user's past successful brews for this method
+    const pastBrews = await db.query.brewingSessions.findMany({
+      where: eq(brewingSessions.method, method),
+      orderBy: desc(brewingSessions.createdAt),
+      limit: 5
+    });
+
+    // Analyze past successful brews
+    const successfulBrews = pastBrews.filter(brew => {
+      const tasting = brew.tasting;
+      return tasting && tasting.overall >= 7; // Consider brews rated 7 or higher
+    });
+
+    // Extract patterns from successful brews
+    const patterns = successfulBrews.map(brew => ({
+      settings: brew.settings,
+      tasting: brew.tasting,
+    }));
+
     const prompt = `Analyze these coffee brewing settings and provide a personalized recommendation.
 Context:
 - Bean Path: ${bean}
@@ -124,31 +143,33 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-Key Considerations for Optimization:
+Past Successful Brews: ${JSON.stringify(patterns)}
+
+Key Considerations:
 1. Bean Characteristics:
-   - Origin and processing method
-   - Roast level and freshness
+   - Origin and processing method from bean path
    - Typical flavor notes
+   - Past successful parameters for similar beans
 
-2. Method-Specific Parameters:
-   - Optimal extraction time
-   - Water distribution
-   - Contact time
+2. Historical Success Patterns:
+   - Parameters that consistently led to high ratings
+   - Common attributes in successful brews
+   - User's preference patterns
 
-3. Equipment Factors:
-   - Filter type
-   - Grinder consistency
-   - Water quality
+3. Method-Specific Optimization:
+   - Extraction time trends
+   - Water distribution techniques
+   - Temperature stability
 
 4. Target Outcome:
-   - Enhanced sweetness and clarity
-   - Balanced extraction
-   - Highlighted bean characteristics
+   - Match or exceed past successful flavor profiles
+   - Optimize for user's demonstrated preferences
+   - Balance consistency with improvement
 
 Provide a clear, actionable recommendation focusing on:
-1. Parameter adjustments (if needed)
-2. Technique improvements
-3. Expected flavor impact
+1. Parameter adjustments based on past success
+2. Technique improvements learned from history
+3. Expected flavor impact based on user preferences
 
 Keep the response concise and user-friendly, focusing on practical improvements.`;
 
