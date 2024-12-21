@@ -59,7 +59,7 @@ export function TastingForm({ onSubmit, settings }: TastingFormProps) {
   const ScoreRow = ({ label, type }: { label: string; type: keyof typeof scores }) => (
     <div className="grid grid-cols-[95px_1fr] gap-y-0.5 py-0.5">
       <div className="text-[#888888] text-sm">{label}</div>
-      <div className="flex justify-end gap-1">
+      <div className="flex justify-end gap-1 overflow-x-auto pb-2 sm:overflow-x-visible sm:pb-0">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
           <ScoreButton
             key={score}

@@ -227,14 +227,14 @@ export default function BrewingPage() {
 
     return (
       <div className="flex items-center justify-end gap-2">
-        <div className="flex items-center gap-1">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           {formattedSteps.map((step, index) => (
-            <React.Fragment key={`${step.step}-${index}`}>
+            <div key={`${step.step}-${index}`} className="flex items-center gap-2">
               <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
               <span className="text-[#cccccc]">
                 {step.step} | {step.amount}/{step.time}
               </span>
-            </React.Fragment>
+            </div>
           ))}
         </div>
         <button
@@ -304,7 +304,7 @@ export default function BrewingPage() {
               <>
                 <button
                   onClick={() => setIsBeanSelectorOpen(true)}
-                  className="text-[#cccccc] hover:text-white focus:outline-none"
+                  className="text-[#cccccc] hover:text-white focus:outline-none break-all text-right"
                 >
                   {settings.bean}
                 </button>
@@ -515,13 +515,13 @@ export default function BrewingPage() {
                 </div>
                 <button
                   onClick={() => setCurrentStep(3)}
-                  className="w-full flex items-center gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
+                  className="w-full flex flex-col sm:flex-row items-start sm:items-center gap-2 hover:bg-[#2a2a2a] rounded px-2 py-1 transition-colors"
                 >
                   <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">
                     BEAN IT
                   </div>
-                  <div className="text-[#cccccc]">brewise.coffee.com/ptoni</div>
-                  <div className="flex items-center gap-1 ml-auto">
+                  <div className="text-[#cccccc] break-all">brewise.coffee.com/ptoni</div>
+                  <div className="flex items-center gap-1 sm:ml-auto mt-2 sm:mt-0">
                     <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
                     <span className="text-[#888888] text-[0.7rem]">68ms</span>
                     <div className="w-6 h-[0.2rem] bg-[#A3E635]/50 rounded-full" />
