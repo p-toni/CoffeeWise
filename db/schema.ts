@@ -19,25 +19,18 @@ export const brewingSessions = pgTable("brewing_sessions", {
     message: string;
   }>(),
   steps: json("steps").$type<{
-    rinse: string[];
-    addCoffee: string[];
-    brewing: {
-      bloom: string;
-      firstPour: string;
-      secondPour: string;
+    rinse?: string[];
+    addCoffee?: string[];
+    brewing?: {
+      bloom?: string;
+      firstPour?: string;
+      secondPour?: string;
     };
-    dripping: string;
-    finalBrew: string;
+    dripping?: string;
+    finalBrew?: string;
   }>(),
   tasting: json("tasting").$type<{
-    aroma: number;
-    body: number;
-    aftertaste: number;
-    acidity: number;
-    sweetness: number;
-    balance: number;
     overall: number;
-    notes: string[];
   }>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -48,14 +41,7 @@ export type NewBrewingSession = typeof brewingSessions.$inferInsert;
 
 // Export schema for API validation
 export const tastingSchema = z.object({
-  aroma: z.number().min(0).max(10),
-  body: z.number().min(0).max(10),
-  aftertaste: z.number().min(0).max(10),
-  acidity: z.number().min(0).max(10),
-  sweetness: z.number().min(0).max(10),
-  balance: z.number().min(0).max(10),
   overall: z.number().min(0).max(10),
-  notes: z.array(z.string()),
 });
 
 export type Tasting = z.infer<typeof tastingSchema>;
