@@ -79,10 +79,10 @@ const StatCard = ({ label, value, trend }: StatCardProps) => (
 );
 
 const calculateOverallRating = (tasting: { aroma: number; body: number; aftertaste: number; } | null): number | null => {
-  if (!tasting || 
-      typeof tasting.aroma !== 'number' || 
-      typeof tasting.body !== 'number' || 
-      typeof tasting.aftertaste !== 'number') {
+  if (!tasting ||
+    typeof tasting.aroma !== 'number' ||
+    typeof tasting.body !== 'number' ||
+    typeof tasting.aftertaste !== 'number') {
     return null;
   }
   return Math.round((tasting.aroma + tasting.body + tasting.aftertaste) / 3);
@@ -99,46 +99,44 @@ export default function BrewingHistory() {
     const thisMonth = new Date().getMonth();
     const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
 
-    // Filter out sessions without valid tasting data and ensure completed status
-    const validSessions = brewingSessions.filter(session => {
-      return session.status === 'completed' && session.tasting !== null;
+    // Filter completed sessions with valid ratings
+    const completedSessions = brewingSessions.filter(session =>
+      session.status === 'completed' && session.tasting !== null
+    );
+
+    const thisMonthSessions = completedSessions.filter(session => {
+      const sessionDate = new Date(session.createdAt);
+      return sessionDate.getMonth() === thisMonth;
     });
 
-    const thisMonthSessions = validSessions.filter(session => {
-      const createdAt = new Date(session.createdAt);
-      return createdAt.getMonth() === thisMonth;
-    });
-
-    const lastMonthSessions = validSessions.filter(session => {
-      const createdAt = new Date(session.createdAt);
-      return createdAt.getMonth() === lastMonth;
+    const lastMonthSessions = completedSessions.filter(session => {
+      const sessionDate = new Date(session.createdAt);
+      return sessionDate.getMonth() === lastMonth;
     });
 
     const calculateAverageRating = (sessions: BrewingSession[]) => {
       if (!sessions.length) return 0;
-      const sum = sessions.reduce((acc, session) => {
-        const rating = calculateOverallRating(session.tasting);
-        return acc + (rating ?? 0);
-      }, 0);
-      return sum / sessions.length;
+      const validRatings = sessions.map(session => calculateOverallRating(session.tasting)).filter((rating): rating is number => rating !== null);
+      if (validRatings.length === 0) return 0;
+      return validRatings.reduce((acc, rating) => acc + rating, 0) / validRatings.length;
     };
 
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
 
-    const completedSessions = brewingSessions.filter(session => session.status === 'completed');
+    // Calculate success rate based on completed sessions only
     const successfulSessions = completedSessions.filter(session => {
       const rating = calculateOverallRating(session.tasting);
       return rating !== null && rating >= 7;
     });
 
-    const successRate = completedSessions.length > 0 
-      ? (successfulSessions.length / completedSessions.length) * 100 
+    const successRate = completedSessions.length > 0
+      ? (successfulSessions.length / completedSessions.length) * 100
       : 0;
 
     return {
       totalBrews: brewingSessions.length,
-      averageRating: calculateAverageRating(validSessions),
+      averageRating: calculateAverageRating(completedSessions),
       ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' :
         thisMonthAvg < lastMonthAvg ? 'down' : 'neutral',
       successRate,
@@ -150,9 +148,10 @@ export default function BrewingHistory() {
   const prepareChartData = React.useCallback(() => {
     if (!brewingSessions?.length) return [];
 
-    // Filter completed sessions with valid ratings
+    // Only include completed sessions with valid ratings
     const completedSessions = brewingSessions
       .filter(session => session.status === 'completed' && session.tasting !== null)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       .slice(-10);
 
     return completedSessions.map(session => ({
