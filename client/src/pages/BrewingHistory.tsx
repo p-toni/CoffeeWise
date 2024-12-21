@@ -21,6 +21,12 @@ interface SectionHeaderProps {
   status?: React.ReactNode;
 }
 
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  trend?: 'up' | 'down' | 'neutral';
+}
+
 const SectionHeader = ({
   icon,
   title,
@@ -36,12 +42,6 @@ const SectionHeader = ({
     )}
   </div>
 );
-
-interface StatCardProps {
-  label: string;
-  value: string | number;
-  trend?: 'up' | 'down' | 'neutral';
-}
 
 const StatCard = ({ label, value, trend }: StatCardProps) => (
   <div className="bg-[#1e1e1e] rounded-md p-3 flex flex-col">
@@ -82,12 +82,20 @@ export default function BrewingHistory() {
 
     const calculateAverageRating = (sessions: BrewingSession[]) => {
       if (sessions.length === 0) return 0;
-      return sessions.reduce((acc, session) => 
-        acc + (session.tasting?.overall ?? 0), 0) / sessions.length;
+      const validRatings = sessions.filter(session => session.tasting && typeof session.tasting.overall === 'number');
+      if (validRatings.length === 0) return 0;
+      return validRatings.reduce((acc, session) => acc + session.tasting!.overall, 0) / validRatings.length;
     };
 
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
+
+    const validSessions = brewingSessions.filter(
+      session => session.tasting && typeof session.tasting.overall === 'number'
+    );
+    const successfulSessions = validSessions.filter(
+      session => session.tasting!.overall >= 7
+    );
 
     return {
       totalBrews: brewingSessions.length,
@@ -97,9 +105,8 @@ export default function BrewingHistory() {
       ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const : 
                    thisMonthAvg < lastMonthAvg ? 'down' as const : 
                    'neutral' as const,
-      successRate: (brewingSessions.filter(session => 
-        (session.tasting?.overall ?? 0) >= 7
-      ).length / brewingSessions.length) * 100,
+      successRate: validSessions.length > 0 ? 
+        (successfulSessions.length / validSessions.length) * 100 : 0,
       brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' as const :
                   thisMonthSessions.length < lastMonthSessions.length ? 'down' as const : 
                   'neutral' as const
@@ -109,7 +116,7 @@ export default function BrewingHistory() {
   const prepareChartData = React.useCallback(() => {
     return brewingSessions.slice(-10).map(session => ({
       date: session.createdAt ? new Date(session.createdAt).toLocaleDateString() : '',
-      rating: session.tasting?.overall ?? 0,
+      rating: session.tasting && typeof session.tasting.overall === 'number' ? session.tasting.overall : null,
       waterTemp: session.settings.water_temp,
       ratio: session.settings.water_ratio,
     }));
@@ -173,7 +180,7 @@ export default function BrewingHistory() {
 
                 <div className="text-[#888888] text-sm">Rating</div>
                 <div className="text-sm text-right text-[#cccccc]">
-                  {session.tasting?.overall ? 
+                  {session.tasting && typeof session.tasting.overall === 'number' ? 
                     `${session.tasting.overall}/10` : 
                     'Not rated'
                   }
