@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { History, BarChart3, Coffee, TrendingUp } from "lucide-react";
+import { History, Coffee, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { type BrewingSession } from "@db/schema";
@@ -64,23 +64,27 @@ export default function BrewingHistory() {
     queryKey: ["/api/brewing/history"],
   });
 
-  const calculateStats = () => {
+  const calculateStats = React.useCallback(() => {
     if (brewingSessions.length === 0) return null;
 
     const thisMonth = new Date().getMonth();
     const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
 
-    const thisMonthSessions = brewingSessions.filter(
-      session => new Date(session.createdAt).getMonth() === thisMonth
-    );
+    const thisMonthSessions = brewingSessions.filter(session => {
+      const createdAt = session.createdAt ? new Date(session.createdAt) : null;
+      return createdAt?.getMonth() === thisMonth;
+    });
 
-    const lastMonthSessions = brewingSessions.filter(
-      session => new Date(session.createdAt).getMonth() === lastMonth
-    );
+    const lastMonthSessions = brewingSessions.filter(session => {
+      const createdAt = session.createdAt ? new Date(session.createdAt) : null;
+      return createdAt?.getMonth() === lastMonth;
+    });
 
-    const calculateAverageRating = (sessions: BrewingSession[]) => 
-      sessions.reduce((acc, session) => 
-        acc + (session.tasting?.overall || 0), 0) / (sessions.length || 1);
+    const calculateAverageRating = (sessions: BrewingSession[]) => {
+      if (sessions.length === 0) return 0;
+      return sessions.reduce((acc, session) => 
+        acc + (session.tasting?.overall ?? 0), 0) / sessions.length;
+    };
 
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
@@ -90,24 +94,26 @@ export default function BrewingHistory() {
       thisMonthBrews: thisMonthSessions.length,
       lastMonthBrews: lastMonthSessions.length,
       averageRating: calculateAverageRating(brewingSessions),
-      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' : 
-                   thisMonthAvg < lastMonthAvg ? 'down' : 'neutral',
-      successRate: (brewingSessions.filter(
-        session => session.tasting?.overall >= 7
+      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const : 
+                   thisMonthAvg < lastMonthAvg ? 'down' as const : 
+                   'neutral' as const,
+      successRate: (brewingSessions.filter(session => 
+        (session.tasting?.overall ?? 0) >= 7
       ).length / brewingSessions.length) * 100,
-      brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' :
-                  thisMonthSessions.length < lastMonthSessions.length ? 'down' : 'neutral'
+      brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' as const :
+                  thisMonthSessions.length < lastMonthSessions.length ? 'down' as const : 
+                  'neutral' as const
     };
-  };
+  }, [brewingSessions]);
 
-  const prepareChartData = () => {
+  const prepareChartData = React.useCallback(() => {
     return brewingSessions.slice(-10).map(session => ({
-      date: new Date(session.createdAt).toLocaleDateString(),
-      rating: session.tasting?.overall || 0,
+      date: session.createdAt ? new Date(session.createdAt).toLocaleDateString() : '',
+      rating: session.tasting?.overall ?? 0,
       waterTemp: session.settings.water_temp,
       ratio: session.settings.water_ratio,
     }));
-  };
+  }, [brewingSessions]);
 
   const stats = calculateStats();
   const chartData = prepareChartData();
