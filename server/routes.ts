@@ -274,6 +274,20 @@ Keep the response concise and user-friendly, focusing on practical improvements.
     res.json(session[0]);
   });
 
+  // Add new route for fetching brewing history
+  app.get("/api/brewing/history", async (req, res) => {
+    try {
+      const sessions = await db.query.brewingSessions.findMany({
+        orderBy: [desc(brewingSessions.createdAt)],
+        limit: 10, // Limit to last 10 sessions
+      });
+
+      res.json(sessions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch brewing history" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

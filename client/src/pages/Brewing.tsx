@@ -18,8 +18,7 @@ import { useState } from "react";
 import { MethodSelector } from "@/components/MethodSelector";
 import { BeanSelector } from "@/components/BeanSelector";
 import { BrewingSteps } from "@/components/BrewingSteps";
-import { queryClient } from "@/lib/queryClient";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLocation } from "wouter";
 
 // Types
 type BrewingMethod = "V60" | "Espresso" | "French Press";
@@ -79,6 +78,7 @@ export default function BrewingPage() {
   const updateSettings = useUpdateSettings(brewingId || "");
   const updateSteps = useUpdateSteps(brewingId || "");
   const updateTasting = useUpdateTasting(brewingId || "");
+  const [, setLocation] = useLocation();
 
   // State
   const [isMethodSelectorOpen, setMethodSelectorOpen] = useState(false);
@@ -166,7 +166,11 @@ export default function BrewingPage() {
     method: BrewingMethod,
   ) => {
     try {
-      await updateSettings.mutateAsync(settings);
+      await updateSettings.mutateAsync({ 
+        bean: settings.bean,
+        method: settings.method,
+        settings: settings.settings
+      });
 
       if (method === "Espresso") {
         const currentShot = updateSteps.data?.steps?.shot || "0ml / 0s";
@@ -232,7 +236,10 @@ export default function BrewingPage() {
       <div className="flex items-center justify-end gap-2">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           {formattedSteps.map((step, index) => (
-            <div key={`${step.step}-${index}`} className="flex items-center gap-2">
+            <div
+              key={`${step.step}-${index}`}
+              className="flex items-center gap-2"
+            >
               <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
               <span className="text-[#cccccc]">
                 {step.step} | {step.amount}/{step.time}
@@ -406,7 +413,6 @@ export default function BrewingPage() {
           </div>
         </Card>
 
-
         {currentStep >= 2 && (
           <>
             <SectionHeader
@@ -523,7 +529,9 @@ export default function BrewingPage() {
                   <div className="text-[0.6rem] bg-[#333333] text-[#bbbbbb] px-1.5 py-0.5 rounded">
                     BEAN IT
                   </div>
-                  <div className="text-[#cccccc] break-all">brewise.coffee.com/ptoni</div>
+                  <div className="text-[#cccccc] break-all">
+                    brewise.coffee.com/ptoni
+                  </div>
                   <div className="flex items-center gap-1 sm:ml-auto mt-2 sm:mt-0">
                     <div className="w-1 h-1 rounded-full bg-[#A3E635]" />
                     <span className="text-[#888888] text-[0.7rem]">68ms</span>
@@ -556,6 +564,7 @@ export default function BrewingPage() {
                     className: "bg-[#1e1e1e] border-[#333333] text-[#f0f0f0]",
                   });
                   setCurrentStep(4);
+                  setLocation("/history");
                 } catch (error) {
                   toast.error("Failed to save tasting notes", {
                     duration: 4000,
