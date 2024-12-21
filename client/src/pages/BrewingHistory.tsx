@@ -99,10 +99,9 @@ export default function BrewingHistory() {
     const thisMonth = new Date().getMonth();
     const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
 
-    // Filter out sessions without valid tasting data
+    // Filter out sessions without valid tasting data and ensure completed status
     const validSessions = brewingSessions.filter(session => {
-      const rating = calculateOverallRating(session.tasting);
-      return rating !== null && session.status === 'completed';
+      return session.status === 'completed' && session.tasting !== null;
     });
 
     const thisMonthSessions = validSessions.filter(session => {
@@ -117,31 +116,34 @@ export default function BrewingHistory() {
 
     const calculateAverageRating = (sessions: BrewingSession[]) => {
       if (!sessions.length) return 0;
-      return sessions.reduce((acc, session) => {
+      const sum = sessions.reduce((acc, session) => {
         const rating = calculateOverallRating(session.tasting);
-        return acc + (rating || 0);
-      }, 0) / sessions.length;
+        return acc + (rating ?? 0);
+      }, 0);
+      return sum / sessions.length;
     };
 
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
 
-    const successfulSessions = validSessions.filter(session => {
+    const completedSessions = brewingSessions.filter(session => session.status === 'completed');
+    const successfulSessions = completedSessions.filter(session => {
       const rating = calculateOverallRating(session.tasting);
       return rating !== null && rating >= 7;
     });
 
+    const successRate = completedSessions.length > 0 
+      ? (successfulSessions.length / completedSessions.length) * 100 
+      : 0;
+
     return {
       totalBrews: brewingSessions.length,
       averageRating: calculateAverageRating(validSessions),
-      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const :
-        thisMonthAvg < lastMonthAvg ? 'down' as const :
-        'neutral' as const,
-      successRate: validSessions.length ?
-        (successfulSessions.length / validSessions.length) * 100 : 0,
-      brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' as const :
-        thisMonthSessions.length < lastMonthSessions.length ? 'down' as const :
-        'neutral' as const
+      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' :
+        thisMonthAvg < lastMonthAvg ? 'down' : 'neutral',
+      successRate,
+      brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' :
+        thisMonthSessions.length < lastMonthSessions.length ? 'down' : 'neutral'
     };
   }, [brewingSessions]);
 
@@ -149,14 +151,11 @@ export default function BrewingHistory() {
     if (!brewingSessions?.length) return [];
 
     // Filter completed sessions with valid ratings
-    const validSessions = brewingSessions
-      .filter(session => {
-        const rating = calculateOverallRating(session.tasting);
-        return rating !== null && session.status === 'completed';
-      })
+    const completedSessions = brewingSessions
+      .filter(session => session.status === 'completed' && session.tasting !== null)
       .slice(-10);
 
-    return validSessions.map(session => ({
+    return completedSessions.map(session => ({
       date: new Date(session.createdAt).toLocaleDateString(),
       rating: calculateOverallRating(session.tasting),
       waterTemp: session.settings.water_temp,
@@ -201,7 +200,7 @@ export default function BrewingHistory() {
 
         <div className="space-y-2">
           {brewingSessions.map((session) => {
-            const rating = calculateOverallRating(session.tasting);
+            const rating = session.status === 'completed' ? calculateOverallRating(session.tasting) : null;
             return (
               <Card key={session.id} className="bg-[#1e1e1e] rounded-md p-3">
                 <DetailRow
