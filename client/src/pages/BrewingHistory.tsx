@@ -79,7 +79,7 @@ const StatCard = ({ label, value, trend }: StatCardProps) => (
 );
 
 const calculateOverallRating = (tasting: { aroma: number; body: number; aftertaste: number; } | null) => {
-  if (!tasting) return null;
+  if (!tasting || typeof tasting.aroma !== 'number' || typeof tasting.body !== 'number' || typeof tasting.aftertaste !== 'number') return null;
   return Math.round((tasting.aroma + tasting.body + tasting.aftertaste) / 3);
 };
 
@@ -96,7 +96,10 @@ export default function BrewingHistory() {
 
     // Filter out sessions without valid tasting data
     const validSessions = brewingSessions.filter(
-      session => session.tasting && typeof session.tasting.aroma === 'number'
+      session => {
+        const rating = calculateOverallRating(session.tasting);
+        return rating !== null;
+      }
     );
 
     const thisMonthSessions = validSessions.filter(session => {
@@ -143,7 +146,12 @@ export default function BrewingHistory() {
   const prepareChartData = React.useCallback(() => {
     if (!brewingSessions?.length) return [];
 
-    return brewingSessions.slice(-10).map(session => ({
+    // Filter out sessions without ratings for the chart
+    const validSessions = brewingSessions
+      .filter(session => calculateOverallRating(session.tasting) !== null)
+      .slice(-10);
+
+    return validSessions.map(session => ({
       date: new Date(session.createdAt).toLocaleDateString(),
       rating: calculateOverallRating(session.tasting),
       waterTemp: session.settings.water_temp,
@@ -187,83 +195,91 @@ export default function BrewingHistory() {
         />
 
         <div className="space-y-2">
-          {brewingSessions.map((session) => (
-            <Card key={session.id} className="bg-[#1e1e1e] rounded-md p-3">
-              <DetailRow
-                label="Method"
-                value={session.method}
-              />
-              <DetailRow
-                label="Bean"
-                value={session.bean}
-              />
-              <DetailRow
-                label="Settings"
-                value={`${session.settings.coffee}g / ${session.settings.water_ratio}:1 / ${session.settings.grind_size} / ${session.settings.water_temp}°C`}
-              />
-              <DetailRow
-                label="Rating"
-                value={session.tasting ?
-                  `${calculateOverallRating(session.tasting)}/10` :
-                    'Not rated'
-                }
-              />
-            </Card>
-          ))}
+          {brewingSessions.map((session) => {
+            const rating = calculateOverallRating(session.tasting);
+            return (
+              <Card key={session.id} className="bg-[#1e1e1e] rounded-md p-3">
+                <DetailRow
+                  label="Method"
+                  value={session.method}
+                />
+                <DetailRow
+                  label="Bean"
+                  value={session.bean}
+                />
+                <DetailRow
+                  label="Settings"
+                  value={`${session.settings.coffee}g / ${session.settings.water_ratio}:1 / ${session.settings.grind_size} / ${session.settings.water_temp}°C`}
+                />
+                <DetailRow
+                  label="Rating"
+                  value={rating !== null ? `${rating}/10` : 'Not rated'}
+                />
+              </Card>
+            );
+          })}
         </div>
 
         <SectionHeader
           title="Brewing Trends"
           icon={<TrendingUp className="w-3 h-3" />}
         />
-        <Card className="bg-[#1e1e1e] rounded-md p-3">
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#888888"
-                  tick={{ fill: '#888888' }}
-                />
-                <YAxis
-                  stroke="#888888"
-                  tick={{ fill: '#888888' }}
-                  yAxisId="left"
-                />
-                <YAxis
-                  stroke="#888888"
-                  tick={{ fill: '#888888' }}
-                  yAxisId="right"
-                  orientation="right"
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1e1e1e',
-                    border: '1px solid #333333',
-                    borderRadius: '4px'
-                  }}
-                  labelStyle={{ color: '#888888' }}
-                  itemStyle={{ color: '#f0f0f0' }}
-                />
-                <Line
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="rating"
-                  stroke="#A3E635"
-                  name="Rating"
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="waterTemp"
-                  stroke="#60A5FA"
-                  name="Water Temp"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+
+        {chartData.length > 0 ? (
+          <Card className="bg-[#1e1e1e] rounded-md p-3">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#888888"
+                    tick={{ fill: '#888888' }}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    tick={{ fill: '#888888' }}
+                    yAxisId="left"
+                    domain={[0, 10]}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    tick={{ fill: '#888888' }}
+                    yAxisId="right"
+                    orientation="right"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1e1e1e',
+                      border: '1px solid #333333',
+                      borderRadius: '4px'
+                    }}
+                    labelStyle={{ color: '#888888' }}
+                    itemStyle={{ color: '#f0f0f0' }}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="rating"
+                    stroke="#A3E635"
+                    name="Rating"
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="waterTemp"
+                    stroke="#60A5FA"
+                    name="Water Temp"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        ) : (
+          <Card className="bg-[#1e1e1e] rounded-md p-3">
+            <p className="text-center text-[#888888]">No rating data available for chart</p>
+          </Card>
+        )}
       </div>
     </div>
   );
