@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -11,75 +10,147 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+// Define strict types for step values
+type StepValue = string | number;
+
+// Define allowed brewing methods
+type BrewingMethod = "Espresso" | "Pour Over" | "French Press";
+
 interface BrewingStep {
   step: string;
-  amount: string;
-  time: string;
+  amount: StepValue;
+  time: StepValue;
 }
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  method: string;
+  method: BrewingMethod;
   steps: BrewingStep[];
-  onUpdate: (index: number, field: keyof BrewingStep, value: string) => void;
+  onUpdate: (index: number, field: keyof BrewingStep, value: StepValue) => void;
 }
 
-const StepInput = ({
+// Input validation functions
+const validateAmount = (
+  value: string,
+  method: BrewingMethod,
+  step: string,
+): boolean => {
+  if (step === "Steep") return true;
+  const numValue = parseFloat(value);
+  if (isNaN(numValue)) return false;
+
+  if (method === "Espresso") {
+    return numValue >= 0 && numValue <= 100; // Reasonable ml range for espresso
+  }
+  return numValue >= 0 && numValue <= 1000; // Reasonable ml range for other methods
+};
+
+const validateTime = (value: string): boolean => {
+  // Accept formats like "30s", "4min", "2:30"
+  const timePattern = /^(\d+)(:\d{1,2})?(?:s|min)?$/;
+  return timePattern.test(value);
+};
+
+const StepInput: React.FC<{
+  value: StepValue;
+  onChange: (value: string) => void;
+  placeholder: string;
+  disabled?: boolean;
+  error?: boolean;
+  type?: "amount" | "time";
+}> = ({
   value,
   onChange,
   placeholder,
   disabled = false,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  disabled?: boolean;
+  error = false,
+  type,
 }) => (
   <Input
     type="text"
-    value={value}
+    value={value.toString()}
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
     disabled={disabled}
     className={cn(
       "bg-[#2a2a2a] border-[#333333] text-[#f0f0f0]",
       "focus:border-[#444444] focus:ring-[#444444]",
-      "placeholder:text-[#666666]"
+      "placeholder:text-[#666666]",
+      error && "border-red-500",
     )}
+    aria-invalid={error}
+    aria-label={`${type} input`}
   />
 );
 
-export function BrewingSteps({ isOpen, onClose, method, steps, onUpdate }: Props) {
-  const [localSteps, setLocalSteps] = React.useState(steps);
+export function BrewingSteps({
+  isOpen,
+  onClose,
+  method,
+  steps,
+  onUpdate,
+}: Props) {
+  const [localSteps, setLocalSteps] = React.useState<BrewingStep[]>(steps);
+  const [errors, setErrors] = React.useState<Record<string, boolean>>({});
 
+  // Reset local state when props change
   React.useEffect(() => {
     setLocalSteps(steps);
-  }, [steps]);
+    setErrors({});
+  }, [steps, method]);
 
   const handleValueChange = (
     index: number,
     field: keyof BrewingStep,
     value: string,
   ) => {
-    const newSteps = [...localSteps];
-    newSteps[index] = { ...newSteps[index], [field]: value };
-    setLocalSteps(newSteps);
-    onUpdate(index, field, value);
+    // Validate input before updating
+    const isValid =
+      field === "amount"
+        ? validateAmount(value, method, localSteps[index].step)
+        : field === "time"
+          ? validateTime(value)
+          : true;
+
+    setErrors((prev) => ({
+      ...prev,
+      [`${index}-${field}`]: !isValid,
+    }));
+
+    if (isValid) {
+      const newSteps = [...localSteps];
+      newSteps[index] = {
+        ...newSteps[index],
+        [field]: field === "amount" && value !== "" ? parseFloat(value) : value,
+      };
+      setLocalSteps(newSteps);
+      onUpdate(index, field, newSteps[index][field]);
+    }
   };
 
-  const getFieldPlaceholder = (field: keyof BrewingStep, stepName: string) => {
-    if (method === 'Espresso' && stepName === 'Shot') {
-      return field === 'amount' ? 'Amount (ml)' : 'Time (s)';
+  const getFieldPlaceholder = (
+    field: keyof BrewingStep,
+    stepName: string,
+  ): string => {
+    if (method === "Espresso" && stepName === "Shot") {
+      return field === "amount" ? "Amount (ml)" : "Time (s)";
     }
-    switch (field) {
-      case "amount":
-        return stepName === "Steep" ? "Wait" : "Amount (ml)";
-      case "time":
-        return "Time (e.g. 30s, 4min)";
-      default:
-        return "";
-    }
+
+    const placeholders: Record<keyof BrewingStep, Record<string, string>> = {
+      amount: {
+        Steep: "Wait",
+        default: "Amount (ml)",
+      },
+      time: {
+        default: "Time (e.g. 30s, 4min)",
+      },
+      step: {
+        default: "",
+      },
+    };
+
+    return placeholders[field][stepName] || placeholders[field].default || "";
   };
 
   return (
@@ -94,17 +165,25 @@ export function BrewingSteps({ isOpen, onClose, method, steps, onUpdate }: Props
               key={`${step.step}-${index}`}
               className="space-y-2 pb-4 border-b border-[#333333] last:border-0 last:pb-0"
             >
-              <h3 className="text-sm font-medium text-[#f0f0f0]">{step.step}</h3>
+              <h3 className="text-sm font-medium text-[#f0f0f0]">
+                {step.step}
+              </h3>
               <div className="grid grid-cols-2 gap-2">
                 <StepInput
                   value={step.amount}
-                  onChange={(value) => handleValueChange(index, "amount", value)}
+                  onChange={(value) =>
+                    handleValueChange(index, "amount", value)
+                  }
                   placeholder={getFieldPlaceholder("amount", step.step)}
+                  error={errors[`${index}-amount`]}
+                  type="amount"
                 />
                 <StepInput
                   value={step.time}
                   onChange={(value) => handleValueChange(index, "time", value)}
                   placeholder={getFieldPlaceholder("time", step.step)}
+                  error={errors[`${index}-time`]}
+                  type="time"
                 />
               </div>
             </div>
