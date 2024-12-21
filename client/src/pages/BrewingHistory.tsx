@@ -51,6 +51,17 @@ const SectionHeader = ({
   </div>
 );
 
+const DetailRow = ({
+  label,
+  value,
+  valueClass = "text-[#cccccc]",
+}: DetailRowProps) => (
+  <div className="grid grid-cols-[95px_1fr] gap-y-0.5">
+    <div className="text-[#888888] text-sm">{label}</div>
+    <div className={`text-sm text-right ${valueClass}`}>{value}</div>
+  </div>
+);
+
 const StatCard = ({ label, value, trend }: StatCardProps) => (
   <div className="bg-[#1e1e1e] rounded-md p-3 flex flex-col">
     <span className="text-[#888888] text-sm">{label}</span>
@@ -73,47 +84,48 @@ export default function BrewingHistory() {
   });
 
   const calculateStats = React.useCallback(() => {
-    if (brewingSessions.length === 0) return null;
+    if (!brewingSessions?.length) return null;
 
     const thisMonth = new Date().getMonth();
     const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
 
-    const thisMonthSessions = brewingSessions.filter(session => {
-      const createdAt = session.createdAt ? new Date(session.createdAt) : null;
-      return createdAt?.getMonth() === thisMonth;
+    // Filter out sessions without valid tasting data
+    const validSessions = brewingSessions.filter(
+      session => session.tasting && typeof session.tasting.overall === 'number'
+    );
+
+    const thisMonthSessions = validSessions.filter(session => {
+      const createdAt = new Date(session.createdAt);
+      return createdAt.getMonth() === thisMonth;
     });
 
-    const lastMonthSessions = brewingSessions.filter(session => {
-      const createdAt = session.createdAt ? new Date(session.createdAt) : null;
-      return createdAt?.getMonth() === lastMonth;
+    const lastMonthSessions = validSessions.filter(session => {
+      const createdAt = new Date(session.createdAt);
+      return createdAt.getMonth() === lastMonth;
     });
 
     const calculateAverageRating = (sessions: BrewingSession[]) => {
-      if (sessions.length === 0) return 0;
-      const validRatings = sessions.filter(session => session.tasting && typeof session.tasting.overall === 'number');
-      if (validRatings.length === 0) return 0;
-      return validRatings.reduce((acc, session) => acc + session.tasting!.overall, 0) / validRatings.length;
+      if (!sessions.length) return 0;
+      const sum = sessions.reduce((acc, session) => {
+        return acc + (session.tasting?.overall || 0);
+      }, 0);
+      return sum / sessions.length;
     };
 
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
 
-    const validSessions = brewingSessions.filter(
-      session => session.tasting && typeof session.tasting.overall === 'number'
-    );
     const successfulSessions = validSessions.filter(
-      session => session.tasting!.overall >= 7
+      session => session.tasting.overall >= 7
     );
 
     return {
       totalBrews: brewingSessions.length,
-      thisMonthBrews: thisMonthSessions.length,
-      lastMonthBrews: lastMonthSessions.length,
-      averageRating: calculateAverageRating(brewingSessions),
+      averageRating: calculateAverageRating(validSessions),
       ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const : 
                    thisMonthAvg < lastMonthAvg ? 'down' as const : 
                    'neutral' as const,
-      successRate: validSessions.length > 0 ? 
+      successRate: validSessions.length ? 
         (successfulSessions.length / validSessions.length) * 100 : 0,
       brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' as const :
                   thisMonthSessions.length < lastMonthSessions.length ? 'down' as const : 
@@ -122,9 +134,11 @@ export default function BrewingHistory() {
   }, [brewingSessions]);
 
   const prepareChartData = React.useCallback(() => {
+    if (!brewingSessions?.length) return [];
+
     return brewingSessions.slice(-10).map(session => ({
-      date: session.createdAt ? new Date(session.createdAt).toLocaleDateString() : '',
-      rating: session.tasting && typeof session.tasting.overall === 'number' ? session.tasting.overall : null,
+      date: new Date(session.createdAt).toLocaleDateString(),
+      rating: session.tasting?.overall || null,
       waterTemp: session.settings.water_temp,
       ratio: session.settings.water_ratio,
     }));
@@ -142,7 +156,6 @@ export default function BrewingHistory() {
           status={new Date().toLocaleDateString()}
         />
 
-        {/* Statistics Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard 
             label="Total Brews"
@@ -151,17 +164,16 @@ export default function BrewingHistory() {
           />
           <StatCard 
             label="Average Rating"
-            value={stats ? `${stats.averageRating.toFixed(1)}/10` : "0.0/10"}
+            value={`${(stats?.averageRating || 0).toFixed(1)}/10`}
             trend={stats?.ratingTrend}
           />
           <StatCard 
             label="Success Rate"
-            value={stats ? `${stats.successRate.toFixed(0)}%` : "0%"}
-            trend="up"
+            value={`${Math.round(stats?.successRate || 0)}%`}
+            trend={stats?.brewsTrend}
           />
         </div>
 
-        {/* Recent Brews */}
         <SectionHeader
           title="Recent Brews"
           icon={<Coffee className="w-3 h-3" />}
@@ -170,35 +182,29 @@ export default function BrewingHistory() {
         <div className="space-y-2">
           {brewingSessions.map((session) => (
             <Card key={session.id} className="bg-[#1e1e1e] rounded-md p-3">
-              <div className="grid grid-cols-[95px_1fr] gap-y-0.5">
-                <div className="text-[#888888] text-sm">Method</div>
-                <div className="text-sm text-right text-[#cccccc]">
-                  {session.method}
-                </div>
-
-                <div className="text-[#888888] text-sm">Bean</div>
-                <div className="text-sm text-right text-[#cccccc] break-all">
-                  {session.bean}
-                </div>
-
-                <div className="text-[#888888] text-sm">Settings</div>
-                <div className="text-sm text-right text-[#cccccc]">
-                  {`${session.settings.coffee}g / ${session.settings.water_ratio}:1 / ${session.settings.grind_size} / ${session.settings.water_temp}°C`}
-                </div>
-
-                <div className="text-[#888888] text-sm">Rating</div>
-                <div className="text-sm text-right text-[#cccccc]">
-                  {session.tasting && typeof session.tasting.overall === 'number' ? 
-                    `${session.tasting.overall}/10` : 
-                    'Not rated'
-                  }
-                </div>
-              </div>
+              <DetailRow
+                label="Method"
+                value={session.method}
+              />
+              <DetailRow
+                label="Bean"
+                value={session.bean}
+              />
+              <DetailRow
+                label="Settings"
+                value={`${session.settings.coffee}g / ${session.settings.water_ratio}:1 / ${session.settings.grind_size} / ${session.settings.water_temp}°C`}
+              />
+              <DetailRow
+                label="Rating"
+                value={session.tasting?.overall ? 
+                  `${session.tasting.overall}/10` : 
+                  'Not rated'
+                }
+              />
             </Card>
           ))}
         </div>
 
-        {/* Brewing Trends */}
         <SectionHeader
           title="Brewing Trends"
           icon={<TrendingUp className="w-3 h-3" />}

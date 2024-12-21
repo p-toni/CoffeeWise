@@ -43,6 +43,23 @@ export const brewingSessions = pgTable("brewing_sessions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export type BrewingSession = typeof brewingSessions.$inferSelect;
+export type NewBrewingSession = typeof brewingSessions.$inferInsert;
+
+// Export schema for API validation
+export const tastingSchema = z.object({
+  aroma: z.number().min(0).max(10),
+  body: z.number().min(0).max(10),
+  aftertaste: z.number().min(0).max(10),
+  acidity: z.number().min(0).max(10),
+  sweetness: z.number().min(0).max(10),
+  balance: z.number().min(0).max(10),
+  overall: z.number().min(0).max(10),
+  notes: z.array(z.string()),
+});
+
+export type Tasting = z.infer<typeof tastingSchema>;
+
 // New table for user preferences
 export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
@@ -95,7 +112,3 @@ export type NewUserPreferences = typeof userPreferences.$inferInsert;
 
 export type RecipeRecommendation = typeof recipeRecommendations.$inferSelect;
 export type NewRecipeRecommendation = typeof recipeRecommendations.$inferInsert;
-
-// Re-export existing types
-export type BrewingSession = typeof brewingSessions.$inferSelect;
-export type NewBrewingSession = typeof brewingSessions.$inferInsert;
