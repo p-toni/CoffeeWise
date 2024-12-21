@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Shield, Zap, Settings2 } from "lucide-react";
+import { Shield, Zap, Settings2, Sparkles } from "lucide-react";
 import { TastingForm } from "@/components/TastingForm";
 import { toast } from "sonner";
 import { SettingsSelector } from "@/components/SettingsSelector";
@@ -19,6 +19,7 @@ import { MethodSelector } from "@/components/MethodSelector";
 import { BeanSelector } from "@/components/BeanSelector";
 import { BrewingSteps } from "@/components/BrewingSteps";
 import { queryClient } from "@/lib/queryClient";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Types
 type BrewingMethod = "V60" | "Espresso" | "French Press";
@@ -86,6 +87,8 @@ export default function BrewingPage() {
   const [isBrewingStepsOpen, setBrewingStepsOpen] = useState(false);
   const [startTime, setStartTime] = useState<string>("");
   const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
+  const [showRecommendation, setShowRecommendation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [settings, setSettings] = useState({
     bean: "/ethiopian/washed/natural/coffee-zen",
@@ -403,6 +406,43 @@ export default function BrewingPage() {
             </Button>
           </div>
         </Card>
+
+        {currentStep === 1 && (
+          <div className="mt-2">
+            <Button
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  await updateSettings.mutateAsync(settings);
+                  setShowRecommendation(true);
+                  setCurrentStep(2);
+                } catch (error) {
+                  toast.error("Failed to get recommendations", {
+                    duration: 4000,
+                    className: "bg-[#1e1e1e] border-[#333333] text-red-500",
+                  });
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-[#2a2a2a] hover:bg-[#333333]"
+              disabled={isLoading}
+            >
+              <Sparkles className="h-4 w-4" />
+              Get AI Recipe Recommendations
+              {isLoading && <span className="animate-pulse">...</span>}
+            </Button>
+          </div>
+        )}
+
+        {showRecommendation && updateSettings.data?.recommendation && (
+          <Alert className="bg-[#1e1e1e] border-[#333333]">
+            <AlertDescription className="text-[#f0f0f0]">
+              {updateSettings.data.recommendation.message}
+            </AlertDescription>
+          </Alert>
+        )}
+
 
         {currentStep >= 2 && (
           <>

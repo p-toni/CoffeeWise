@@ -115,7 +115,7 @@ export function registerRoutes(app: Express): Server {
     const { id } = req.params;
     const { bean, method, settings } = req.body;
 
-    const prompt = `Analyze these coffee brewing settings and provide a concise recommendation.
+    const prompt = `Analyze these coffee brewing settings and provide a personalized recommendation.
 Context:
 - Bean Path: ${bean}
 - Brewing Method: ${method}
@@ -124,16 +124,33 @@ Context:
 - Water Temperature: ${settings.water_temp}°C
 - Grind Size: ${settings.grind_size}
 
-As a specialty coffee expert, analyze these brewing parameters considering:
+Key Considerations for Optimization:
+1. Bean Characteristics:
+   - Origin and processing method
+   - Roast level and freshness
+   - Typical flavor notes
 
-1. Temperature's impact on flavor development and extraction kinetics
-2. Grind size distribution's effect on extraction uniformity
-3. The relationship between dose, ratio, and extraction potential
-4. How these parameters might affect the bean's inherent characteristics
+2. Method-Specific Parameters:
+   - Optimal extraction time
+   - Water distribution
+   - Contact time
 
-Consider potential flavor notes, mouthfeel, and balance. Provide clear, actionable adjustments if needed, explaining their impact on the final cup profile.
+3. Equipment Factors:
+   - Filter type
+   - Grinder consistency
+   - Water quality
 
-Keep the response concise yet technically precise, focusing on maximizing sweetness, clarity, and overall cup quality.`;
+4. Target Outcome:
+   - Enhanced sweetness and clarity
+   - Balanced extraction
+   - Highlighted bean characteristics
+
+Provide a clear, actionable recommendation focusing on:
+1. Parameter adjustments (if needed)
+2. Technique improvements
+3. Expected flavor impact
+
+Keep the response concise and user-friendly, focusing on practical improvements.`;
 
     const result = await recommendationModel.generateContent(prompt);
     const response = await result.response;
