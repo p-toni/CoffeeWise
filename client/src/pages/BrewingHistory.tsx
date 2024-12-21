@@ -19,6 +19,13 @@ interface SectionHeaderProps {
   icon?: React.ReactNode;
   title: string | React.ReactNode;
   status?: React.ReactNode;
+  statusColor?: string;
+}
+
+interface DetailRowProps {
+  label: string;
+  value: React.ReactNode;
+  valueClass?: string;
 }
 
 interface StatCardProps {
@@ -31,6 +38,7 @@ const SectionHeader = ({
   icon,
   title,
   status,
+  statusColor = "text-[#888888]",
 }: SectionHeaderProps) => (
   <div className="flex items-center gap-2 text-[#bbbbbb] py-1">
     {icon && (
@@ -38,7 +46,7 @@ const SectionHeader = ({
     )}
     <span className="text-sm font-normal">{title}</span>
     {status && (
-      <span className="ml-auto text-[0.7rem] text-[#888888]">{status}</span>
+      <span className={`ml-auto text-[0.7rem] ${statusColor}`}>{status}</span>
     )}
   </div>
 );
@@ -143,12 +151,12 @@ export default function BrewingHistory() {
           />
           <StatCard 
             label="Average Rating"
-            value={stats ? `${stats.averageRating.toFixed(1)}/10` : "N/A"}
+            value={stats ? `${stats.averageRating.toFixed(1)}/10` : "0.0/10"}
             trend={stats?.ratingTrend}
           />
           <StatCard 
             label="Success Rate"
-            value={stats ? `${stats.successRate.toFixed(0)}%` : "N/A"}
+            value={stats ? `${stats.successRate.toFixed(0)}%` : "0%"}
             trend="up"
           />
         </div>
