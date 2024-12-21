@@ -1,0 +1,381 @@
+[
+    {
+        "id": 123,
+        "brewingId": "S04al-1734796005303",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "started",
+        "recommendation": null,
+        "steps": null,
+        "tasting": null,
+        "createdAt": "2024-12-21T15:46:45.410Z",
+        "updatedAt": "2024-12-21T15:46:45.410Z"
+    },
+    {
+        "id": 122,
+        "brewingId": "TNpTn-1734795933354",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "brewing",
+        "recommendation": {
+            "message": "Good starting point, no changes needed for this first brew.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "36ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "173ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "115ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "288ml / 120s"
+        },
+        "tasting": null,
+        "createdAt": "2024-12-21T15:45:33.423Z",
+        "updatedAt": "2024-12-21T15:45:33.423Z"
+    },
+    {
+        "id": 121,
+        "brewingId": "AxYDq-1734795694138",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "Espresso",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 2,
+            "grind_size": "fine",
+            "water_temp": 92
+        },
+        "status": "completed",
+        "recommendation": {
+            "message": "Recommended: Maintain settings, monitor extraction for optimal flavor.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "prep": "Preheat machine and portafilter",
+            "grind": "Grind coffee fine, dose into portafilter",
+            "tamp": "Tamp with 30 lbs pressure, level and polish",
+            "brewing": [
+                {
+                    "step": "Shot",
+                    "amount": "36ml",
+                    "time": "30s"
+                }
+            ],
+            "finalBrew": "36ml / 30s"
+        },
+        "tasting": {
+            "aroma": 7,
+            "body": 6,
+            "aftertaste": 8
+        },
+        "createdAt": "2024-12-21T15:41:34.220Z",
+        "updatedAt": "2024-12-21T15:41:34.220Z"
+    },
+    {
+        "id": 120,
+        "brewingId": "ScT_c-1734795175144",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "Espresso",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 2,
+            "grind_size": "fine",
+            "water_temp": 92
+        },
+        "status": "completed",
+        "recommendation": {
+            "message": "Maintain current settings for balanced espresso. Consider slight grind adjustment for optimal extraction.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "prep": "Preheat machine and portafilter",
+            "grind": "Grind coffee fine, dose into portafilter",
+            "tamp": "Tamp with 30 lbs pressure, level and polish",
+            "brewing": [
+                {
+                    "step": "Shot",
+                    "amount": "36ml",
+                    "time": "30s"
+                }
+            ],
+            "finalBrew": "36ml / 30s"
+        },
+        "tasting": {
+            "aroma": 6,
+            "body": 7,
+            "aftertaste": 8
+        },
+        "createdAt": "2024-12-21T15:32:55.223Z",
+        "updatedAt": "2024-12-21T15:32:55.223Z"
+    },
+    {
+        "id": 119,
+        "brewingId": "E9ko0-1734795126998",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "completed",
+        "recommendation": {
+            "message": "Good starting point, no adjustments needed. Enjoy!",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "36ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "173ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "115ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "288ml / 120s"
+        },
+        "tasting": {
+            "aroma": 8,
+            "body": 8,
+            "aftertaste": 8
+        },
+        "createdAt": "2024-12-21T15:32:07.691Z",
+        "updatedAt": "2024-12-21T15:32:07.691Z"
+    },
+    {
+        "id": 118,
+        "brewingId": "_9Oh4-1734794671450",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "brewing",
+        "recommendation": {
+            "message": "Keep settings as is. No past data to suggest changes, good starting point.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "36ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "173ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "115ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "288ml / 120s"
+        },
+        "tasting": null,
+        "createdAt": "2024-12-21T15:24:31.537Z",
+        "updatedAt": "2024-12-21T15:24:31.537Z"
+    },
+    {
+        "id": 117,
+        "brewingId": "aiuEm-1734794567489",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "brewing",
+        "recommendation": {
+            "message": "Good starting point. Maintain parameters for now.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "36ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "173ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "115ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "288ml / 120s"
+        },
+        "tasting": null,
+        "createdAt": "2024-12-21T15:22:47.500Z",
+        "updatedAt": "2024-12-21T15:22:47.500Z"
+    },
+    {
+        "id": 116,
+        "brewingId": "8vSRw-1734794495904",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 16,
+            "water_ratio": 14,
+            "grind_size": "fine",
+            "water_temp": 94
+        },
+        "status": "completed",
+        "recommendation": {
+            "message": "Maintain current settings. Fine grind with V60 at 94°C works well with Ethiopian washed beans.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "32ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "134ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "90ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "224ml / 120s"
+        },
+        "tasting": {
+            "aroma": 9,
+            "body": 9,
+            "aftertaste": 9
+        },
+        "createdAt": "2024-12-21T15:21:35.990Z",
+        "updatedAt": "2024-12-21T15:21:35.990Z"
+    },
+    {
+        "id": 115,
+        "brewingId": "puodb-1734794296061",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "settings_updated",
+        "recommendation": {
+            "message": "Good setup, consider a slightly finer grind for enhanced sweetness.",
+            "status": "Allowed"
+        },
+        "steps": null,
+        "tasting": null,
+        "createdAt": "2024-12-21T15:18:16.154Z",
+        "updatedAt": "2024-12-21T15:18:16.154Z"
+    },
+    {
+        "id": 114,
+        "brewingId": "WPKzM-1734793511866",
+        "bean": "/ethiopian/washed/natural/coffee-zen",
+        "method": "V60",
+        "settings": {
+            "coffee": 18,
+            "water_ratio": 16,
+            "grind_size": "medium",
+            "water_temp": 92
+        },
+        "status": "brewing",
+        "recommendation": {
+            "message": "Good starting point, consider a slightly finer grind if lacking clarity.",
+            "status": "Allowed"
+        },
+        "steps": {
+            "rinse": "Pour hot water through the filter. Discard the rinse water.",
+            "addCoffee": "Place the coffee into the filter. Gently shake the dripper to level.",
+            "brewing": [
+                {
+                    "step": "Bloom",
+                    "amount": "36ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "First Pour",
+                    "amount": "173ml",
+                    "time": "30s"
+                },
+                {
+                    "step": "Second Pour",
+                    "amount": "115ml",
+                    "time": "30s"
+                }
+            ],
+            "dripping": "30s",
+            "finalBrew": "288ml / 120s"
+        },
+        "tasting": null,
+        "createdAt": "2024-12-21T15:05:11.954Z",
+        "updatedAt": "2024-12-21T15:05:11.954Z"
+    }
+]

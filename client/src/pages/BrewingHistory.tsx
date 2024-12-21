@@ -68,15 +68,20 @@ const StatCard = ({ label, value, trend }: StatCardProps) => (
     <span className="text-[#f0f0f0] text-lg mt-1">{value}</span>
     {trend && (
       <div className={`text-xs mt-2 ${
-        trend === 'up' ? 'text-[#A3E635]' : 
-        trend === 'down' ? 'text-red-500' : 
-        'text-[#888888]'
+        trend === 'up' ? 'text-[#A3E635]' :
+          trend === 'down' ? 'text-red-500' :
+            'text-[#888888]'
       }`}>
         {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} vs last month
       </div>
     )}
   </div>
 );
+
+const calculateOverallRating = (tasting: { aroma: number; body: number; aftertaste: number; } | null) => {
+  if (!tasting) return null;
+  return Math.round((tasting.aroma + tasting.body + tasting.aftertaste) / 3);
+};
 
 export default function BrewingHistory() {
   const { data: brewingSessions = [] } = useQuery<BrewingSession[]>({
@@ -91,7 +96,7 @@ export default function BrewingHistory() {
 
     // Filter out sessions without valid tasting data
     const validSessions = brewingSessions.filter(
-      session => session.tasting && typeof session.tasting.overall === 'number'
+      session => session.tasting && typeof session.tasting.aroma === 'number'
     );
 
     const thisMonthSessions = validSessions.filter(session => {
@@ -107,7 +112,8 @@ export default function BrewingHistory() {
     const calculateAverageRating = (sessions: BrewingSession[]) => {
       if (!sessions.length) return 0;
       const sum = sessions.reduce((acc, session) => {
-        return acc + (session.tasting?.overall || 0);
+        const overallRating = calculateOverallRating(session.tasting);
+        return acc + (overallRating || 0);
       }, 0);
       return sum / sessions.length;
     };
@@ -115,21 +121,22 @@ export default function BrewingHistory() {
     const thisMonthAvg = calculateAverageRating(thisMonthSessions);
     const lastMonthAvg = calculateAverageRating(lastMonthSessions);
 
-    const successfulSessions = validSessions.filter(
-      session => session.tasting.overall >= 7
-    );
+    const successfulSessions = validSessions.filter(session => {
+      const overallRating = calculateOverallRating(session.tasting);
+      return overallRating !== null && overallRating >= 7;
+    });
 
     return {
       totalBrews: brewingSessions.length,
       averageRating: calculateAverageRating(validSessions),
-      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const : 
-                   thisMonthAvg < lastMonthAvg ? 'down' as const : 
-                   'neutral' as const,
-      successRate: validSessions.length ? 
+      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' as const :
+        thisMonthAvg < lastMonthAvg ? 'down' as const :
+          'neutral' as const,
+      successRate: validSessions.length ?
         (successfulSessions.length / validSessions.length) * 100 : 0,
       brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' as const :
-                  thisMonthSessions.length < lastMonthSessions.length ? 'down' as const : 
-                  'neutral' as const
+        thisMonthSessions.length < lastMonthSessions.length ? 'down' as const :
+          'neutral' as const
     };
   }, [brewingSessions]);
 
@@ -138,7 +145,7 @@ export default function BrewingHistory() {
 
     return brewingSessions.slice(-10).map(session => ({
       date: new Date(session.createdAt).toLocaleDateString(),
-      rating: session.tasting?.overall || null,
+      rating: calculateOverallRating(session.tasting),
       waterTemp: session.settings.water_temp,
       ratio: session.settings.water_ratio,
     }));
@@ -157,17 +164,17 @@ export default function BrewingHistory() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <StatCard 
+          <StatCard
             label="Total Brews"
             value={stats?.totalBrews || 0}
             trend={stats?.brewsTrend}
           />
-          <StatCard 
+          <StatCard
             label="Average Rating"
             value={`${(stats?.averageRating || 0).toFixed(1)}/10`}
             trend={stats?.ratingTrend}
           />
-          <StatCard 
+          <StatCard
             label="Success Rate"
             value={`${Math.round(stats?.successRate || 0)}%`}
             trend={stats?.brewsTrend}
@@ -196,9 +203,9 @@ export default function BrewingHistory() {
               />
               <DetailRow
                 label="Rating"
-                value={session.tasting?.overall ? 
-                  `${session.tasting.overall}/10` : 
-                  'Not rated'
+                value={session.tasting ?
+                  `${calculateOverallRating(session.tasting)}/10` :
+                    'Not rated'
                 }
               />
             </Card>
@@ -214,25 +221,25 @@ export default function BrewingHistory() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#888888" 
-                  tick={{ fill: '#888888' }} 
+                <XAxis
+                  dataKey="date"
+                  stroke="#888888"
+                  tick={{ fill: '#888888' }}
                 />
-                <YAxis 
-                  stroke="#888888" 
+                <YAxis
+                  stroke="#888888"
                   tick={{ fill: '#888888' }}
                   yAxisId="left"
                 />
-                <YAxis 
-                  stroke="#888888" 
+                <YAxis
+                  stroke="#888888"
                   tick={{ fill: '#888888' }}
                   yAxisId="right"
                   orientation="right"
                 />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1e1e1e', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1e1e1e',
                     border: '1px solid #333333',
                     borderRadius: '4px'
                   }}

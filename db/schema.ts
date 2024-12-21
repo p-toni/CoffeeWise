@@ -1,5 +1,5 @@
-import { pgTable, text, serial, timestamp, integer, json, foreignKey } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { pgTable, text, serial, timestamp, json } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const brewingSessions = pgTable("brewing_sessions", {
@@ -30,7 +30,9 @@ export const brewingSessions = pgTable("brewing_sessions", {
     finalBrew?: string;
   }>(),
   tasting: json("tasting").$type<{
-    overall: number;
+    aroma: number;
+    body: number;
+    aftertaste: number;
   }>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -41,7 +43,9 @@ export type NewBrewingSession = typeof brewingSessions.$inferInsert;
 
 // Export schema for API validation
 export const tastingSchema = z.object({
-  overall: z.number().min(0).max(10),
+  aroma: z.number().min(0).max(10),
+  body: z.number().min(0).max(10),
+  aftertaste: z.number().min(0).max(10),
 });
 
 export type Tasting = z.infer<typeof tastingSchema>;
@@ -87,10 +91,10 @@ export const recipeRecommendations = pgTable("recipe_recommendations", {
 
 // Create schemas for the new tables
 export const insertUserPreferencesSchema = createInsertSchema(userPreferences);
-export const selectUserPreferencesSchema = createSelectSchema(userPreferences);
+//export const selectUserPreferencesSchema = createSelectSchema(userPreferences);
 
 export const insertRecipeRecommendationsSchema = createInsertSchema(recipeRecommendations);
-export const selectRecipeRecommendationsSchema = createSelectSchema(recipeRecommendations);
+//export const selectRecipeRecommendationsSchema = createSelectSchema(recipeRecommendations);
 
 // Export types for the new tables
 export type UserPreferences = typeof userPreferences.$inferSelect;
