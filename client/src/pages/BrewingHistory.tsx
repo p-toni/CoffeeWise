@@ -1,9 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { History, BarChart3, Coffee } from "lucide-react";
+import { History, BarChart3, Coffee, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
+import { type BrewingSession } from "@db/schema";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -50,26 +60,57 @@ const StatCard = ({ label, value, trend }: StatCardProps) => (
 );
 
 export default function BrewingHistory() {
-  const { data: brewingSessions } = useQuery({
+  const { data: brewingSessions = [] } = useQuery<BrewingSession[]>({
     queryKey: ["/api/brewing/history"],
   });
 
   const calculateStats = () => {
-    if (!brewingSessions) return null;
+    if (brewingSessions.length === 0) return null;
+
+    const thisMonth = new Date().getMonth();
+    const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+
+    const thisMonthSessions = brewingSessions.filter(
+      session => new Date(session.createdAt).getMonth() === thisMonth
+    );
+
+    const lastMonthSessions = brewingSessions.filter(
+      session => new Date(session.createdAt).getMonth() === lastMonth
+    );
+
+    const calculateAverageRating = (sessions: BrewingSession[]) => 
+      sessions.reduce((acc, session) => 
+        acc + (session.tasting?.overall || 0), 0) / (sessions.length || 1);
+
+    const thisMonthAvg = calculateAverageRating(thisMonthSessions);
+    const lastMonthAvg = calculateAverageRating(lastMonthSessions);
 
     return {
       totalBrews: brewingSessions.length,
-      averageRating: brewingSessions.reduce(
-        (acc: number, session: any) => 
-          acc + (session.tasting?.overall || 0), 0
-      ) / brewingSessions.length,
-      successRate: brewingSessions.filter(
-        (session: any) => session.tasting?.overall >= 7
-      ).length / brewingSessions.length * 100,
+      thisMonthBrews: thisMonthSessions.length,
+      lastMonthBrews: lastMonthSessions.length,
+      averageRating: calculateAverageRating(brewingSessions),
+      ratingTrend: thisMonthAvg > lastMonthAvg ? 'up' : 
+                   thisMonthAvg < lastMonthAvg ? 'down' : 'neutral',
+      successRate: (brewingSessions.filter(
+        session => session.tasting?.overall >= 7
+      ).length / brewingSessions.length) * 100,
+      brewsTrend: thisMonthSessions.length > lastMonthSessions.length ? 'up' :
+                  thisMonthSessions.length < lastMonthSessions.length ? 'down' : 'neutral'
     };
   };
 
+  const prepareChartData = () => {
+    return brewingSessions.slice(-10).map(session => ({
+      date: new Date(session.createdAt).toLocaleDateString(),
+      rating: session.tasting?.overall || 0,
+      waterTemp: session.settings.water_temp,
+      ratio: session.settings.water_ratio,
+    }));
+  };
+
   const stats = calculateStats();
+  const chartData = prepareChartData();
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#f0f0f0] p-4 font-mono text-sm">
@@ -85,12 +126,12 @@ export default function BrewingHistory() {
           <StatCard 
             label="Total Brews"
             value={stats?.totalBrews || 0}
-            trend="up"
+            trend={stats?.brewsTrend}
           />
           <StatCard 
             label="Average Rating"
             value={stats ? `${stats.averageRating.toFixed(1)}/10` : "N/A"}
-            trend="neutral"
+            trend={stats?.ratingTrend}
           />
           <StatCard 
             label="Success Rate"
@@ -106,7 +147,7 @@ export default function BrewingHistory() {
         />
 
         <div className="space-y-2">
-          {brewingSessions?.map((session: any) => (
+          {brewingSessions.map((session) => (
             <Card key={session.id} className="bg-[#1e1e1e] rounded-md p-3">
               <div className="grid grid-cols-[95px_1fr] gap-y-0.5">
                 <div className="text-[#888888] text-sm">Method</div>
@@ -136,14 +177,57 @@ export default function BrewingHistory() {
           ))}
         </div>
 
-        {/* Trends */}
+        {/* Brewing Trends */}
         <SectionHeader
-          title="Trends"
-          icon={<BarChart3 className="w-3 h-3" />}
+          title="Brewing Trends"
+          icon={<TrendingUp className="w-3 h-3" />}
         />
         <Card className="bg-[#1e1e1e] rounded-md p-3">
-          <div className="text-center text-[#888888] py-8">
-            Brewing parameter trends coming soon
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#888888" 
+                  tick={{ fill: '#888888' }} 
+                />
+                <YAxis 
+                  stroke="#888888" 
+                  tick={{ fill: '#888888' }}
+                  yAxisId="left"
+                />
+                <YAxis 
+                  stroke="#888888" 
+                  tick={{ fill: '#888888' }}
+                  yAxisId="right"
+                  orientation="right"
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#1e1e1e', 
+                    border: '1px solid #333333',
+                    borderRadius: '4px'
+                  }}
+                  labelStyle={{ color: '#888888' }}
+                  itemStyle={{ color: '#f0f0f0' }}
+                />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="rating"
+                  stroke="#A3E635"
+                  name="Rating"
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="waterTemp"
+                  stroke="#60A5FA"
+                  name="Water Temp"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </Card>
       </div>
